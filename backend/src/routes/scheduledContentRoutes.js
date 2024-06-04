@@ -7,7 +7,6 @@ const auth = require('../middleware/authMiddleware');
 router.get('/', auth(['content_planner']), scheduledContentController.index);
 router.get('/:id', auth(['content_planner']), scheduledContentController.get);
 router.post('/', auth(['content_planner']), scheduledContentController.create);
-router.put('/:id', auth(['content_planner']), scheduledContentController.update);
 router.delete('/:id', auth(['content_planner']), scheduledContentController.delete);
 
 module.exports = router;

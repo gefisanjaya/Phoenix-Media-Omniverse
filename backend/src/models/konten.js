@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const KontenSchema = new mongoose.Schema({
-  id_klien: { type: mongoose.Schema.Types.ObjectId, ref: 'Klien', required: true },
+  sosmed_id: { type: mongoose.Schema.Types.ObjectId, ref: 'SosialMedia', required: true },
   jadwal: { type: Date, required: true },
   judul: { type: String, required: true },
   status_upload: { type: String, default: 'not_uploaded', enum: ['not_uploaded', 'uploaded'] },

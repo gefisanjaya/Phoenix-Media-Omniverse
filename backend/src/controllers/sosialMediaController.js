@@ -23,9 +23,9 @@ exports.get = async (req, res) => {
 
 // Membuat akun media sosial baru
 exports.create = async (req, res) => {
-  const { id_klien, platform, username, access_token, refresh_token, token_expires_at } = req.body;
+  const { id_klien, platform, username, sosmed_id } = req.body;
 
-  if (!id_klien || !platform || !username || !access_token) {
+  if (!id_klien || !platform || !username || !sosmed_id) {
     return res.status(400).json({ message: 'Required fields are missing' });
   }
 
@@ -34,9 +34,7 @@ exports.create = async (req, res) => {
       id_klien,
       platform,
       username,
-      access_token,
-      refresh_token,
-      token_expires_at
+      sosmed_id
     });
     await sosialMediaAccount.save();
     res.status(201).json(sosialMediaAccount);
