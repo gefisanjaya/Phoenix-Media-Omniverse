@@ -1,11 +1,11 @@
+const { Worker } = require('worker_threads');
+const path = require('path');
 const ScheduledContent = require('../models/scheduledContent');
 const Konten = require('../models/konten');
 const SosialMedia = require('../models/mediaSosial');
-const { Worker, workerData } = require('worker_threads');
-const path = require('path');
-const scheduledContent = require('../models/scheduledContent');
 
-
+// Variabel global untuk menyimpan referensi ke setiap thread yang aktif
+let activeWorkers = [];
 
 exports.index = async (req, res) => {
   try {
@@ -20,12 +20,12 @@ exports.get = async (req, res) => {
   try {
     const scheduledContent = await ScheduledContent.findById(req.params.id)
     .populate({
-        path: 'konten_id',
-        populate: {
+      path: 'konten_id',
+      populate: {
         path: 'sosmed_id',
         model: 'SosialMedia'
-        }
-      });
+      }
+    });
     if (!scheduledContent) return res.status(404).json({ message: 'Scheduled Content not found' });
     res.json(scheduledContent);
   } catch (err) {
@@ -56,8 +56,15 @@ exports.create = async (req, res) => {
 
     // Buat instance worker di sini setelah menyimpan scheduledContent
     const worker = new Worker(path.resolve(__dirname, '../worker/schedulerWorker.js'), {
-      workerData: scheduledContent._id.toString()
+      workerData: {
+        scheduledContentId: scheduledContent._id.toString(),
+        sosmedId: sosialMedia._id.toString()
+      }
     });
+
+    // Tambahkan worker ke dalam daftar activeWorkers
+    activeWorkers.push(worker);
+    console.log(`Total active workers: ${activeWorkers.length}`);
 
     worker.on('message', (message) => {
       if (message.success) {
@@ -75,6 +82,9 @@ exports.create = async (req, res) => {
       if (code !== 0) {
         console.error(`Worker berhenti dengan kode keluar ${code}`);
       }
+      // Hapus worker dari daftar activeWorkers setelah selesai atau berhenti
+      activeWorkers = activeWorkers.filter(w => w !== worker);
+      console.log(`Total active workers: ${activeWorkers.length}`);
     });
 
     res.status(201).json({ scheduledContent_id: scheduledContent._id }); // Kirimkan hanya scheduledContent_id
@@ -82,7 +92,6 @@ exports.create = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-
 
 exports.delete = async (req, res) => {
   try {

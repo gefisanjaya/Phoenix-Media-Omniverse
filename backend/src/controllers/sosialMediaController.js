@@ -21,6 +21,18 @@ exports.get = async (req, res) => {
   }
 };
 
+// Mengambil akun media sosial berdasarkan ID
+exports.getById = async (req, res) => {
+  try {
+    const sosialMediaAccount = await SosialMedia.findById(req.params.id).populate('id_klien');
+    if (!sosialMediaAccount) return res.status(404).json({ message: 'Social Media Account not found' });
+    res.json(sosialMediaAccount);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
 // Membuat akun media sosial baru
 exports.create = async (req, res) => {
   const { id_klien, platform, username, sosmed_id } = req.body;
