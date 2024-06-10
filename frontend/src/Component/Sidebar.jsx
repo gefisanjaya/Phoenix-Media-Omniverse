@@ -23,7 +23,7 @@ const Sidebar = () => {
   }
 
   return (
-    <div className="h-screen bg-purple text-white flex flex-col justify-between w-[20%]">
+    <div className="h-screen bg-purple text-white flex flex-col justify-between w-[15%]">
       <div className="flex flex-col">
         <div className="flex flex-row py-3 mt-4 mx-auto">
           <img src={logo} alt="Phoenix Media Omniverse" className="w-12 mb-2 mr-3" />
@@ -94,15 +94,6 @@ const Sidebar = () => {
         </nav>
       </div>
       <div className="flex flex-col mb-4">
-        <li className="flex items-center space-x-2 relative ml-5">
-          <FaBell />
-          <span>Notifications</span>
-          <span className="absolute top-1 right-2 text-black bg-white rounded-full px-2 text-xs">10</span>
-        </li>
-        <li className="flex items-center space-x-2 mt-8 ml-5">
-          <FaCog />
-          <span>Settings</span>
-        </li>
         <li className="flex items-center space-x-2 mt-8 ml-5">
           <CgProfile className='w-8 h-8' />
           <span>Content Planner</span>

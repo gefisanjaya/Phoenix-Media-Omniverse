@@ -73,7 +73,7 @@ const Dashboard = () => {
   return (
     <div className="flex w-full no-scrollbar">
       <Sidebar />
-      <div className="container mx-auto p-4">
+      <div className="container mx-auto p-4 w-[85%]">
         <h1 className="text-2xl font-bold py-3 mb-3 text-left">
           Hello, Content Planner!
         </h1>
