@@ -10,8 +10,6 @@ import Task from "./Pages/Task";
 import Client from "./Pages/Client";
 import ContentPlan from "./Pages/ContentPlan";
 
-
-
 function App() {
   return (
     <div className="App">
