@@ -7,7 +7,7 @@ exports.createKonten = async (req, res) => {
     const { sosmed_id, jadwal, judul, format_konten, caption, copy, link_output } = req.body;
 
     // Validate foreign keys
-    const sosmedExists = await SosialMedia.findById();
+    const sosmedExists = await SosialMedia.findById(sosmed_id);
 
     if (!sosmedExists) {
       return res.status(400).json({ message: 'Klien or SosialMedia not found' });
