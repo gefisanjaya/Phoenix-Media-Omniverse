@@ -14,6 +14,8 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
+app.use(cors(corsOptions));
+
 
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
@@ -30,7 +32,6 @@ app.use('/scheduled-contents', scheduledContentRoutes);
 app.use('/social-media', sosialMediaRoutes);
 app.use('/klien', klienRoutes);
 app.use('/konten', kontenRoutes);
-app.use(cors(corsOptions));
 
 
 // Melayani file yang diunggah
