@@ -18,7 +18,7 @@ const ContentPlan = () => {
 
   const getKonten = async () => {
     try {
-      const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NjZlNmYwMTNjM2M2MmY0YTAxMjU4NSIsImlhdCI6MTcxODAyNjExNCwiZXhwIjoxNzE4MTEyNTE0fQ._jXpRjU3XZe69IHMh4JBd3AdSDoCFxlLaIT85hxhuvk";
+      const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NjZlNmYwMTNjM2M2MmY0YTAxMjU4NSIsImlhdCI6MTcxODExNDUwMiwiZXhwIjoxNzE4MjAwOTAyfQ._LqUwrBPOsqLq-egEtN2zs4Qb2OgFFG5xfkpjrdQ_-8";
       const response = await axios.get("/konten", {
         headers: {
           Authorization: `Bearer ${token}`,
