@@ -2,17 +2,19 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from "../Component/Sidebar";
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import ModalAddTask from '../Component/Modal/ModalAddTask';
-import axios from '../axiosConfig';
+import axiosInstance from '../axiosConfig';
+
+const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NjZlNmYwMTNjM2M2MmY0YTAxMjU4NSIsImlhdCI6MTcxODEyMTUzOSwiZXhwIjoxNzE4MjA3OTM5fQ.naaHNPLQH43TaYU5jera63JVV2LPwHDX8e948zLRJp0";
 
 const Task = () => {
   const [data, setData] = useState({ tasks: {}, columns: {}, columnOrder: [] });
   const [showModal, setShowModal] = useState(false);
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NjZlNmYwMTNjM2M2MmY0YTAxMjU4NSIsImlhdCI6MTcxODExNDUwMiwiZXhwIjoxNzE4MjAwOTAyfQ._LqUwrBPOsqLq-egEtN2zs4Qb2OgFFG5xfkpjrdQ_-8";
-        const response = await axios.get('/tasks', {
+        const response = await axiosInstance.get('/tasks', {
           headers: {
             Authorization: `Bearer ${token}`,
           }
@@ -34,6 +36,8 @@ const Task = () => {
             columns['column-1'].taskIds.push(task._id);
           } else if (task.status === 'in_progress') {
             columns['column-2'].taskIds.push(task._id);
+          } else if (task.status === 'in_review') {
+            columns['column-3'].taskIds.push(task._id);
           } else if (task.status === 'done') {
             columns['column-4'].taskIds.push(task._id);
           }
@@ -45,7 +49,21 @@ const Task = () => {
       }
     };
 
+    const fetchUsers = async () => {
+      try {
+        const response = await axiosInstance.get('/users', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+        setUsers(response.data);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+
     fetchTasks();
+    fetchUsers();
   }, []);
 
   const onDragEnd = result => {
@@ -113,8 +131,8 @@ const Task = () => {
 
   const handleAddTask = async (task) => {
     try {
-      const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NjZlNmYwMTNjM2M2MmY0YTAxMjU4NSIsImlhdCI6MTcxODExNDUwMiwiZXhwIjoxNzE4MjAwOTAyfQ._LqUwrBPOsqLq-egEtN2zs4Qb2OgFFG5xfkpjrdQ_-8";
-      const response = await axios.post('/tasks', task, {
+      console.log(task);
+      const response = await axiosInstance.post('/tasks', task, {
         headers: {
           Authorization: `Bearer ${token}`,
         }
@@ -181,8 +199,8 @@ const Task = () => {
                             >
                               <h3 className="text-sm text-left font-bold">{task.title}</h3>
                               <hr className="h-0.5 border-t-1 border-gray/30" />
-                              <p className="text-xs text-left">Assigned: {task.assigned}</p>
-                              <p className="text-xs text-left">Due Date: {new Date(task.tenggat_waktu).toLocaleString()}</p>
+                              <p className="text-xs text-left">Assigned: {task.assign}</p>
+                              <p className="text-xs text-left">Due Date: {new Date(task.tenggat_waktu).toLocaleString("en-IE")}</p>
                               <p className="text-xs text-left">Description: {task.deskripsi}</p>
                             </div>
                           )}
@@ -201,6 +219,7 @@ const Task = () => {
         show={showModal}
         onClose={() => setShowModal(false)}
         onSubmit={handleAddTask}
+        users={users}
       />
     </div>
   );
