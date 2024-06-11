@@ -39,7 +39,7 @@ exports.get = async (req, res) => {
 exports.create = [
   upload.fields([{ name: 'proposal' }, { name: 'kontrak' }, { name: 'nda' }]),
   async (req, res) => {
-    const { nama, email, deskripsi } = req.body;
+    const { nama, email, alamat, deskripsi } = req.body;
 
     if (!nama || !email) {
       return res.status(400).json({ message: 'Required fields are missing' });
@@ -49,6 +49,7 @@ exports.create = [
       const klien = new Klien({
         nama,
         email,
+        alamat,
         deskripsi,
         proposal: req.files['proposal'] ? req.files['proposal'][0].filename : null,
         kontrak: req.files['kontrak'] ? req.files['kontrak'][0].filename : null,
@@ -66,7 +67,7 @@ exports.create = [
 exports.update = [
   upload.fields([{ name: 'proposal' }, { name: 'kontrak' }, { name: 'nda' }]),
   async (req, res) => {
-    const { nama, email, deskripsi } = req.body;
+    const { nama, email, alamat, deskripsi } = req.body;
 
     try {
       const klien = await Klien.findById(req.params.id);
@@ -74,6 +75,7 @@ exports.update = [
 
       if (nama) klien.nama = nama;
       if (email) klien.email = email;
+      if (alamat) klien.alamat = alamat;
       if (deskripsi) klien.deskripsi = deskripsi;
       if (req.files['proposal']) klien.proposal = req.files['proposal'][0].filename;
       if (req.files['kontrak']) klien.kontrak = req.files['kontrak'][0].filename;
