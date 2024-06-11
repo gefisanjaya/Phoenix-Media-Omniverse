@@ -3,11 +3,15 @@ import axios from "../axiosConfig";
 import Sidebar from "../Component/Sidebar"
 import {FaExternalLinkAlt } from "react-icons/fa";
 import moment from "moment";
-import ig from "../icon/instagram.ico"
+import ModalDetails from "../Component/Modal/ModalDetails";
+import ModalCreateContent from "../Component/Modal/ModalCreateContent";
 
 const ContentPlan = () => {
   const [konten, setKonten] = useState([]);
-
+  const [showModal, setShowModal] = useState(false);
+  const [showModalForm, setShowModalForm] = useState(false);
+  const [selectedKontenIndex, setSelectedKontenIndex] = useState(null);
+  
   useEffect(() => {
     getKonten();
   }, []);
@@ -28,13 +32,24 @@ const ContentPlan = () => {
     }
   };
 
+  const handleFormSubmit = (formData) => {
+    console.log('Form Data:', formData);
+    
+    setShowModalForm(false);
+  };
+
+  const handleDetailsClick = (index) => {
+    setSelectedKontenIndex(index);
+    setShowModal(true);
+  };
+
   return (
     <div className="flex w-full h-full no-scrollbar">
       <Sidebar />
       <div className="p-8 w-[85%]">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">Content Plan</h1>
-          <button className="bg-purple text-white px-4 py-2 rounded flex items-center">
+          <button className="bg-purple text-white px-4 py-2 rounded flex items-center" onClick={() => setShowModalForm(true)}>
             <span className="mr-2">Create</span>
             <FaExternalLinkAlt />
           </button>
@@ -63,16 +78,22 @@ const ContentPlan = () => {
                 <td className="px-2 py-2 border">{item.caption}</td>
                 <td className="px-2 py-2 border">{item.format_konten}</td>
                 <td className="px-2 py-2 border text-blue">
-                  <a className="text-blue" href={item.link_output}>
+                  <a className="text-blue underline" href={item.link_output}>
                     See Media
                   </a>
                 </td>
-                <td className="px-2 py-2 border text-blue">{item.status_upload}</td>
-                <td className="px-2 py-2 border text-blue">{item.details}</td>
+                <td className="px-2 py-2 border ">{item.status_upload}</td>
+                <td className="px-2 py-2 border text-blue">
+                <button onClick={() => handleDetailsClick(index)}>
+                    <p className="underline">Details</p>
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
+        <ModalDetails showModal={showModal} onClose={() => setShowModal(false)} konten={konten} selectedIndex={selectedKontenIndex} />
+        <ModalCreateContent showModal={showModalForm} onClose={() => setShowModalForm(false)} onSubmit={handleFormSubmit} konten={konten}/>
       </div>
     </div>
   );
