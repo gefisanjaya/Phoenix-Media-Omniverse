@@ -57,15 +57,13 @@ exports.create = async (req, res) => {
 
 // Memperbarui akun media sosial berdasarkan ID
 exports.update = async (req, res) => {
-  const { access_token, refresh_token, token_expires_at } = req.body;
+  const { sosmed_id} = req.body;
 
   try {
     const sosialMediaAccount = await SosialMedia.findById(req.params.id);
     if (!sosialMediaAccount) return res.status(404).json({ message: 'Social Media Account not found' });
 
-    if (access_token) sosialMediaAccount.access_token = access_token;
-    if (refresh_token) sosialMediaAccount.refresh_token = refresh_token;
-    if (token_expires_at) sosialMediaAccount.token_expires_at = token_expires_at;
+    if (sosmed_id) sosialMediaAccount.sosmed_id = sosmed_id;
     sosialMediaAccount.updated_at = Date.now();
     await sosialMediaAccount.save();
     res.json(sosialMediaAccount);

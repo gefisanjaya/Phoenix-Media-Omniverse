@@ -53,6 +53,9 @@ exports.create = async (req, res) => {
 
     const scheduledContent = new ScheduledContent({ konten_id, scheduled_date, platform });
     await scheduledContent.save();
+  
+    konten.status_upload = 'scheduled';
+    await konten.save();
 
     // Buat instance worker di sini setelah menyimpan scheduledContent
     const worker = new Worker(path.resolve(__dirname, '../worker/schedulerWorker.js'), {
