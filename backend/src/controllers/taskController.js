@@ -1,4 +1,6 @@
 const Task = require('../models/task');
+const User = require('../models/user');
+
 
 // Get all tasks
 exports.getTasks = async (req, res) => {
@@ -11,22 +13,30 @@ exports.getTasks = async (req, res) => {
 };
 
 // Create a new task
+
 exports.createTask = async (req, res) => {
-  const { deskripsi, tenggat_waktu } = req.body;
   try {
+    const { userId, deskripsi, tenggat_waktu } = req.body;
+
+    // Cari user berdasarkan ID untuk mendapatkan role
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Buat task baru dengan role dari user
     const newTask = new Task({
-      id_role: req.user._id,
+      assign: user.role, // Menggunakan role user sebagai assign
       deskripsi,
       tenggat_waktu,
     });
 
-    const task = await newTask.save();
-    res.status(201).json(task);
+    await newTask.save();
+    res.status(201).json(newTask);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
-
 // Update task status
 exports.updateTask = async (req, res) => {
   const { status } = req.body;
