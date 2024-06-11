@@ -7,12 +7,13 @@ const ModalAddTask = ({ show, onClose, onSubmit }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const title = event.target.elements.title.value;
-    const assigned = event.target.elements.assigned.value;
+    const assign = event.target.elements.assign.value;
+    const deskripsi = event.target.elements.deskripsi.value;
+    const status = 'available'; // default status as per schema
     const dueDate = event.target.elements.dueDate.value;
     const dueTime = event.target.elements.dueTime.value;
-    const description = event.target.elements.description.value;
-    onSubmit({ title, assigned, dueDate: `${dueDate}T${dueTime}`, description });
+    const tenggat_waktu = `${dueDate}T${dueTime}`;
+    onSubmit({ assign, deskripsi, status, tenggat_waktu });
   };
 
   return (
@@ -21,12 +22,14 @@ const ModalAddTask = ({ show, onClose, onSubmit }) => {
         <h2 className="text-lg font-semibold mb-4">Add Task</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Title</label>
-            <input type="text" name="title" className="w-full border border-grayp-2 rounded" required />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Assigned</label>
-            <input type="text" name="assigned" className="w-full border border-grayp-2 rounded" required />
+            <label className="block text-sm font-medium mb-1">Assign</label>
+            <select name="assign" className="w-full border border-gray-300 p-2 rounded" required>
+              <option value="">Select role</option>
+              <option value="admin">Admin</option>
+              <option value="content_planner">Content Planner</option>
+              <option value="designer">Designer</option>
+              <option value="videographer">Videographer</option>
+            </select>
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">Description</label>
