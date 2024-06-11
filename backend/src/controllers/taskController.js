@@ -1,7 +1,6 @@
 const Task = require('../models/task');
 const User = require('../models/user');
 
-
 // Get all tasks
 exports.getTasks = async (req, res) => {
   try {
@@ -13,7 +12,6 @@ exports.getTasks = async (req, res) => {
 };
 
 // Create a new task
-
 exports.createTask = async (req, res) => {
   try {
     const { userId, deskripsi, tenggat_waktu } = req.body;
@@ -24,8 +22,9 @@ exports.createTask = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Buat task baru dengan role dari user
+    // Buat task baru dengan user ID dan role dari user sebagai assign
     const newTask = new Task({
+      user_id: user._id,
       assign: user.role, // Menggunakan role user sebagai assign
       deskripsi,
       tenggat_waktu,
@@ -37,6 +36,7 @@ exports.createTask = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
 // Update task status
 exports.updateTask = async (req, res) => {
   const { status } = req.body;
@@ -116,6 +116,31 @@ exports.get = async (req, res) => {
     if (!task) {
       return res.status(404).json({ message: 'Task not found' });
     }
+    res.status(200).json(task);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// PATCH task status
+exports.patchTaskStatus = async (req, res) => {
+  const { status } = req.body;
+  try {
+    const task = await Task.findById(req.params.id);
+
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+
+    const validStatuses = ['available', 'in_progress', 'in_review', 'done'];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ message: 'Invalid status' });
+    }
+
+    task.status = status;
+    task.updated_at = Date.now();
+
+    await task.save();
     res.status(200).json(task);
   } catch (err) {
     res.status(500).json({ message: err.message });
