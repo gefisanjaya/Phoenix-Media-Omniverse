@@ -5,26 +5,24 @@ import { FaExternalLinkAlt } from "react-icons/fa";
 import moment from "moment";
 import ModalDetails from "../Component/Modal/ModalDetails";
 import ModalCreateContent from "../Component/Modal/ModalCreateContent";
-import ModalPublish from "../Component/Modal/ModalPublish";
 import ig from "../icon/instagram.ico"
+import ModalSchedule from "../Component/Modal/ModalSchedule";
 
 const ContentPlan = () => {
   const [konten, setKonten] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [showModalForm, setShowModalForm] = useState(false);
-  const [showModalPublish, setShowModalPublish] = useState(false);
+  const [showModalSchedule, setShowModalSchedule] = useState(false);
   const [selectedKontenIndex, setSelectedKontenIndex] = useState(null);
-  const [schedule, setSchedule] = useState([]);
 
 
   useEffect(() => {
     getKonten();
-    getSchedule();
   }, []);
 
   const getKonten = async () => {
     try {
-      const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NjZlNmYwMTNjM2M2MmY0YTAxMjU4NSIsImlhdCI6MTcxODEyMTUzOSwiZXhwIjoxNzE4MjA3OTM5fQ.naaHNPLQH43TaYU5jera63JVV2LPwHDX8e948zLRJp0";
+      const token = localStorage.getItem("token");
       const response = await axios.get("/konten", {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -37,23 +35,6 @@ const ContentPlan = () => {
       console.log(error);
     }
   };
-
-  const getSchedule = async () => {
-    try {
-      const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NjZlNmYwMTNjM2M2MmY0YTAxMjU4NSIsImlhdCI6MTcxODEyMTUzOSwiZXhwIjoxNzE4MjA3OTM5fQ.naaHNPLQH43TaYU5jera63JVV2LPwHDX8e948zLRJp0";
-      const response = await axios.get("/scheduled-contents", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      setSchedule(response.data);
-      console.log(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const handleFormSubmit = (formData) => {
     console.log('Form Data:', formData);
 
@@ -65,17 +46,17 @@ const ContentPlan = () => {
     setShowModal(true);
   };
 
-  const handlePublishClick = (index) => {
+  const handleScheduleClick = (index) => {
     setSelectedKontenIndex(index);
-    setShowModalPublish(true);
+    setShowModalSchedule(true);
   };
 
-  const handlePublishConfirm = async () => {
+  const handleScheduleConfirm = async () => {
     if (selectedKontenIndex !== null) {
       const kontenItem = konten[selectedKontenIndex];
-      // Add your publish logic here. For example, you might want to update the status in the backend
+      // Add your Schedule logic here. For example, you might want to update the status in the backend
       try {
-        const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NjZlNmYwMTNjM2M2MmY0YTAxMjU4NSIsImlhdCI6MTcxODEyMTUzOSwiZXhwIjoxNzE4MjA3OTM5fQ.naaHNPLQH43TaYU5jera63JVV2LPwHDX8e948zLRJp0";
+        const token = localStorage.getItem("token");
         await axios.post(`/scheduled-contents`, { konten_id: kontenItem._id }, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -134,7 +115,17 @@ const ContentPlan = () => {
                     See Media
                   </a>
                 </td>
-                <td className="px-2 py-2 border">{item.status_upload}</td>
+                {item.status_upload === "not_uploaded" ? (
+                  <td className="px-2 py-2 border bg-[gray] bg-opacity-55">{item.status_upload}</td>
+                ):(
+                  item.status_upload ==="scheduled" ? (
+                    <td className="px-2 py-2 border bg-[yellow]">{item.status_upload}</td>
+                  ) : (
+                    <td className="px-2 py-2 border bg-[green]">{item.status_upload}</td>
+                  )
+                )}
+                
+
                 <td className="px-2 py-2 border text-blue">
                   <button onClick={() => handleDetailsClick(index)}>
                     <p className="underline">Details</p>
@@ -142,7 +133,7 @@ const ContentPlan = () => {
                 </td>
                 <td className="px-2 py-2 border">
                   {item.status_upload !== "scheduled" ? (
-                    <button className="bg-purple text-white px-2 py-2 rounded flex justify-center" onClick={() => handlePublishClick(index)}>
+                    <button className="bg-purple text-white px-2 py-2 rounded flex justify-center" onClick={() => handleScheduleClick(index)}>
                       <p className="mr-2 text-sm text-center">Schedule</p>
                     </button>
                   ) : (
@@ -155,7 +146,7 @@ const ContentPlan = () => {
         </table>
         <ModalDetails showModal={showModal} onClose={() => setShowModal(false)} konten={konten} selectedIndex={selectedKontenIndex} />
         <ModalCreateContent showModal={showModalForm} onClose={() => setShowModalForm(false)} onSubmit={handleFormSubmit} konten={konten} />
-        <ModalPublish showModal={showModalPublish} onClose={() => setShowModalPublish(false)} onConfirm={handlePublishConfirm} />
+        <ModalSchedule showModal={showModalSchedule} onClose={() => setShowModalSchedule(false)} onConfirm={handleScheduleConfirm} />
       </div>
     </div>
   );

@@ -1,17 +1,18 @@
 import { useState, useEffect } from "react";
 import axios from "../axiosConfig"; // Make sure this points to your axios configuration
 import Sidebar from "../Component/Sidebar";
-import ig from "../icon/instagram.ico";
+import ModalAddClient from "../Component/Modal/ModalAddClient";
 
 const Client = () => {
   const [clients, setClients] = useState([]);
   const [selectedClient, setSelectedClient] = useState(null);
   const [search, setSearch] = useState('');
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NjZlMmI3MTNjM2M2MmY0YTAxMjU3NyIsImlhdCI6MTcxODEzMzQxOSwiZXhwIjoxNzE4MjE5ODE5fQ.20x8-5CsavlQWyROxEfboARsEsxmbostmvV6qXRMdec";
+        const token = localStorage.getItem("token");
         const response = await axios.get("/klien", {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -35,6 +36,21 @@ const Client = () => {
     setSearch(event.target.value);
   };
 
+  const handleAddClient = async (client) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post("/klien", client, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setClients([...clients, response.data]);
+      setShowModal(false);
+    } catch (error) {
+      console.error("Error adding client:", error);
+    }
+  };
+
   const filteredClients = clients.filter(client =>
     client.nama.toLowerCase().includes(search.toLowerCase())
   );
@@ -49,9 +65,12 @@ const Client = () => {
             placeholder="Search"
             value={search}
             onChange={handleSearchChange}
-            className="w-full p-2 mb-4 border rounded"
+            className="w-full p-2 mb-2 border rounded"
           />
           <ul>
+            <button className="bg-purple text-white px-4 py-2 mb-2 rounded flex items-center justify-center w-full" onClick={() => setShowModal(true)}>
+              <span className="mr-2 text-center">Add Client</span>
+            </button>  
             {filteredClients.map((client, index) => (
               <li
                 key={client._id}
@@ -85,11 +104,6 @@ const Client = () => {
                   <h1 className="text-xl font-semibold">{selectedClient.nama}</h1>
                   <p className="text-gray-600">{selectedClient.type}</p>
                 </div>
-                <div className="ml-auto flex">
-                  <a href={selectedClient.instagram} aria-label="Instagram">
-                    <img src={ig} className="w-8 h-8" />
-                  </a>
-                </div>
               </div>
               <div className="grid grid-cols-2 text-left font-semibold">
                 <div>
@@ -112,6 +126,11 @@ const Client = () => {
           )}
         </div>
       </div>
+      <ModalAddClient
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        onSubmit={handleAddClient}
+      />
     </div>
   );
 };

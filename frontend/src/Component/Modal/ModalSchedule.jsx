@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ModalPublish = ({ showModal, onClose, onConfirm }) => {
+const ModalSchedule = ({ showModal, onClose, onConfirm }) => {
   if (!showModal) {
     return null;
   }
@@ -11,10 +11,10 @@ const ModalPublish = ({ showModal, onClose, onConfirm }) => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75">
       <div className="bg-white p-6 rounded shadow-lg w-1/3">
-        <h2 className="text-lg font-semibold mb-4">Confirm Publish</h2>
-        <p>Are you sure you want to publish this content?</p>
+        <h2 className="text-lg font-semibold mb-4">Confirm Schedule</h2>
+        <p>Are you sure you want to schedule this content?</p>
         <div className="flex justify-end mt-4">
           <button
             type="button"
@@ -36,4 +36,4 @@ const ModalPublish = ({ showModal, onClose, onConfirm }) => {
   );
 };
 
-export default ModalPublish;
+export default ModalSchedule;

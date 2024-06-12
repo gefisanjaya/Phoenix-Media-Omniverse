@@ -1,13 +1,36 @@
 import React from "react";
-// import { useState } from "react";
-// import { useNavigate } from "react-router-dom";
-// import axios from "axios";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "../axiosConfig";
 // import { useAlert } from "react-alert";
 import logo from "../img/whitemainlogo-1.webp";
 import { MdOutlineEmail } from "react-icons/md";
 import { FaLock } from "react-icons/fa";
 
 const Login = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null); // Clear previous errors
+    try {
+      const response = await axios.post("/auth/login", { username, password });
+      const { token, role } = response.data;
+  
+      // Save the token to local storage or state management
+      localStorage.setItem("token", token);
+      localStorage.setItem("role", role);
+
+      // Navigate to the next page
+      navigate("/dashboard");
+    } catch (err) {
+      setError("Invalid username or password. Please try again.");
+    }
+  };
+
   return (
     <div className="flex h-screen">
       <div className="w-3/5 bg-purple flex items-center justify-center">
@@ -19,25 +42,34 @@ const Login = () => {
         <div className="w-1/2">
           <h2 className="text-2xl font-bold mb-2">Hello Again!</h2>
           <p className="mb-8">Welcome Back</p>
-          <form>
-            <div class="relative mb-6">
-              <input type="email" id="email"
-                class="pl-10 pr-4 py-2 rounded-lg w-full border border-gray"
-                placeholder="Email Address" />
-              <div class="absolute inset-y-0 left-0 pl-3  
-                    flex items-center opacity-60 
-                    pointer-events-none">
-                <MdOutlineEmail/>
+          <form onSubmit={handleSubmit}>
+            {error && <div className="text-[red] mb-4">{error}</div>}
+            <div className="relative mb-6">
+              <input
+                type="username"
+                id="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="pl-10 pr-4 py-2 rounded-lg w-full border border-gray"
+                placeholder="Username"
+                required
+              />
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center opacity-60 pointer-events-none">
+                <MdOutlineEmail />
               </div>
             </div>
-            <div class="relative mb-6">
-              <input type="password" id="password"
-                class="pl-10 pr-4 py-2 rounded-lg w-full border border-gray"
-                placeholder="Password" />
-              <div class="absolute inset-y-0 left-0 pl-3  
-                    flex items-center opacity-60 
-                    pointer-events-none">
-                <FaLock/>
+            <div className="relative mb-6">
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="pl-10 pr-4 py-2 rounded-lg w-full border border-gray"
+                placeholder="Password"
+                required
+              />
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center opacity-60 pointer-events-none">
+                <FaLock />
               </div>
             </div>
             <div className="flex items-center justify-center">
@@ -49,6 +81,7 @@ const Login = () => {
                   Login
                 </button>
                 <a
+                  href="#"
                   className="flex justify-center font-light text-sm text-lightpurple hover:text-purple"
                 >
                   Forgot Password?
