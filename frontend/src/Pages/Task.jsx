@@ -4,8 +4,6 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import ModalAddTask from '../Component/Modal/ModalAddTask';
 import axiosInstance from '../axiosConfig';
 
-const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NjZlNmYwMTNjM2M2MmY0YTAxMjU4NSIsImlhdCI6MTcxODEyMTUzOSwiZXhwIjoxNzE4MjA3OTM5fQ.naaHNPLQH43TaYU5jera63JVV2LPwHDX8e948zLRJp0";
-
 const Task = () => {
   const [data, setData] = useState({ tasks: {}, columns: {}, columnOrder: [] });
   const [showModal, setShowModal] = useState(false);
@@ -14,6 +12,7 @@ const Task = () => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
+        const token = localStorage.getItem("token");
         const response = await axiosInstance.get('/tasks', {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -51,6 +50,7 @@ const Task = () => {
 
     const fetchUsers = async () => {
       try {
+        const token = localStorage.getItem("token");
         const response = await axiosInstance.get('/users', {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -132,6 +132,7 @@ const Task = () => {
   const handleAddTask = async (task) => {
     try {
       console.log(task);
+      const token = localStorage.getItem("token");
       const response = await axiosInstance.post('/tasks', task, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -172,15 +173,8 @@ const Task = () => {
 
             return (
               <div key={column.id} className="flex flex-col w-1/4 p-2">
-                <h2 className="mb-2 text-lg font-semibold">{column.title}</h2>
-                {columnId === 'column-1' && (
-                  <button
-                    onClick={() => setShowModal(true)}
-                    className="mb-2 px-4 py-2 bg-purple text-white rounded"
-                  >
-                    Add Task
-                  </button>
-                )}
+                <h2 className="mb-2 ml-2 text-lg font-semibold text-left">{column.title}</h2>
+
                 <Droppable droppableId={column.id}>
                   {provided => (
                     <div
@@ -197,15 +191,23 @@ const Task = () => {
                               ref={provided.innerRef}
                               className="p-4 mb-2 bg-gray-50 rounded shadow"
                             >
-                              <h3 className="text-sm text-left font-bold">{task.title}</h3>
+                              <h3 className="text-sm text-left font-bold mb-2">Task #{index + 1}</h3>
                               <hr className="h-0.5 border-t-1 border-gray/30" />
-                              <p className="text-xs text-left">Assigned: {task.assign}</p>
-                              <p className="text-xs text-left">Due Date: {new Date(task.tenggat_waktu).toLocaleString("en-IE")}</p>
-                              <p className="text-xs text-left">Description: {task.deskripsi}</p>
+                              <p className="text-xs text-left mt-1"><b>Assigned:</b> {task.assign}</p>
+                              <p className="text-xs text-left"><b>Due Date: </b>{new Date(task.tenggat_waktu).toLocaleString("en-IE")}</p>
+                              <p className="text-xs text-left"><b>Description:</b> {task.deskripsi}</p>
                             </div>
                           )}
                         </Draggable>
                       ))}
+                      {columnId === 'column-1' && (
+                        <button
+                          onClick={() => setShowModal(true)}
+                          className="mb-2 px-4 py-2 w-full bg-purple text-white rounded"
+                        >
+                          Add Task
+                        </button>
+                      )}
                       {provided.placeholder}
                     </div>
                   )}

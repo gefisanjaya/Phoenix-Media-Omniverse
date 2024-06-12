@@ -65,7 +65,7 @@ const ModalCreateContent = ({ showModal, onClose, onSubmit, konten }) => {
         };
 
         try {
-            const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NjZlNmYwMTNjM2M2MmY0YTAxMjU4NSIsImlhdCI6MTcxODEyMTUzOSwiZXhwIjoxNzE4MjA3OTM5fQ.naaHNPLQH43TaYU5jera63JVV2LPwHDX8e948zLRJp0";
+            const token = localStorage.getItem("token");
             const response = await axios.post("/konten", formDataToSend, {
                 headers: {
                     Authorization: `Bearer ${token}`,
