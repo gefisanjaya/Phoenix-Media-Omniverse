@@ -24,6 +24,7 @@ exports.register = async (req, res) => {
 };
 
 // Login user
+
 exports.login = async (req, res) => {
   const { username, password } = req.body;
 
@@ -34,13 +35,20 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ id: user._id }, 'your_jwt_secret', { expiresIn: '1d' });
+    // Sertakan role dalam payload token JWT
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      'your_jwt_secret',
+      { expiresIn: '1d' }
+    );
 
-    res.status(200).json({ token });
+    // Kirim respons dengan token dan role
+    res.status(200).json({ token, role: user.role });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
+
 
 // Forgot password
 exports.forgotPassword = async (req, res) => {
