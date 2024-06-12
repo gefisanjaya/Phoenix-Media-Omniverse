@@ -5,9 +5,6 @@ const KlienSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   alamat: {type: String},
   deskripsi: { type: String, required: true},
-  proposal: { type: String },
-  kontrak: { type: String },
-  nda: { type: String },
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now }
 });
