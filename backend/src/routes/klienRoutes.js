@@ -4,10 +4,10 @@ const klienController = require('../controllers/klienController');
 const auth = require('../middleware/authMiddleware');
 
 // Hanya admin yang dapat mengakses rute ini
-router.get('/', auth(['admin']), klienController.index);
-router.get('/:id', auth(['admin']), klienController.get);
-router.post('/', auth(['admin']), klienController.create);
-router.put('/:id', auth(['admin']), klienController.update);
-router.delete('/:id', auth(['admin']), klienController.delete);
+router.get('/', klienController.getAllClients);
+router.get('/:id', klienController.getClientById);
+router.post('/', klienController.createClient);
+router.put('/:id', klienController.updateClient);
+router.delete('/:id', klienController.deleteClient);
 
 module.exports = router;
