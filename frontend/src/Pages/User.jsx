@@ -10,6 +10,7 @@ const UserManagement = () => {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [sortOrder, setSortOrder] = useState('asc');
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -87,6 +88,17 @@ const UserManagement = () => {
     setShowDeleteModal(true);
   };
 
+  const handleSort = () => {
+    const sortedUsers = [...users];
+    sortedUsers.sort((a, b) => {
+      if (a.role < b.role) return sortOrder === 'asc' ? -1 : 1;
+      if (a.role > b.role) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
+    setUsers(sortedUsers);
+    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+  };
+
   return (
     <div className="flex w-full h-full no-scrollbar">
       <Sidebar />
@@ -97,23 +109,26 @@ const UserManagement = () => {
             <button className="bg-purple hover:bg-lightpurple text-white px-4 py-2 rounded" onClick={() => setShowModal(true)}>Add User</button>
           </div>
           <table className="min-w-full bg-white border border-gray-200 rounded-lg">
-            <thead className="bg-gray-100">
+            <thead className="bg-gray bg-opacity-55">
               <tr>
-                <th className="px-4 py-2 border w-20">Index</th>
+                <th className="px-4 py-2 border w-20">No</th>
                 <th className="px-4 py-2 border">Username</th>
-                <th className="px-4 py-2 border">Role</th>
+                <th className="px-4 py-2 border cursor-pointer" onClick={handleSort}>
+                  Role
+                  {sortOrder === 'asc' ? ' ▲' : ' ▼'}
+                </th>
                 <th className="px-4 py-2 border">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {users.map((user, index) => (
-                <tr key={user._id} className="hover:bg-lightpurple hover:bg-opacity-50">
+                <tr key={user._id}>
                   <td className="px-4 py-2 border w-auto">{index + 1}</td>
                   <td className="px-4 py-2 border">{user.username}</td>
                   <td className="px-4 py-2 border">{user.role}</td>
                   <td className="px-4 py-2 border">
                     <button className="bg-blue hover:bg-midnight text-white px-2 py-1 rounded mr-2" onClick={() => handleEditClick(user)}>Edit</button>
-                    <button className="bg-[red] hover:bg-gray text-white px-2 py-1 rounded" onClick={() => handleDeleteClick(user)}>Delete</button>
+                    <button className="bg-[red] text-white px-2 py-1 rounded" onClick={() => handleDeleteClick(user)}>Delete</button>
                   </td>
                 </tr>
               ))}
