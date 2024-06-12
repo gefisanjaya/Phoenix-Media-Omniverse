@@ -1,102 +1,80 @@
 const Klien = require('../models/klien');
-const multer = require('multer');
-const path = require('path');
 
-// Setup multer for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}_${file.originalname}`);
-  }
-});
-
-const upload = multer({ storage: storage });
-
-// Mengambil semua klien
-exports.index = async (req, res) => {
+// Get all clients
+exports.getAllClients = async (req, res) => {
   try {
-    const klien = await Klien.find();
-    res.json(klien);
+    const clients = await Klien.find();
+    res.status(200).json(clients);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
-// Mengambil klien berdasarkan ID
-exports.get = async (req, res) => {
+// Get a single client by ID
+exports.getClientById = async (req, res) => {
   try {
-    const klien = await Klien.findById(req.params.id);
-    if (!klien) return res.status(404).json({ message: 'Klien not found' });
-    res.json(klien);
+    const client = await Klien.findById(req.params.id);
+    if (!client) {
+      return res.status(404).json({ message: 'Client not found' });
+    }
+    res.status(200).json(client);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
-// Membuat klien baru
-exports.create = [
-  upload.fields([{ name: 'proposal' }, { name: 'kontrak' }, { name: 'nda' }]),
-  async (req, res) => {
-    const { nama, email, alamat, deskripsi } = req.body;
+// Create a new client
+exports.createClient = async (req, res) => {
+  const { nama, email, alamat, deskripsi } = req.body;
 
-    if (!nama || !email) {
-      return res.status(400).json({ message: 'Required fields are missing' });
-    }
+  const client = new Klien({
+    nama,
+    email,
+    alamat,
+    deskripsi
+  });
 
-    try {
-      const klien = new Klien({
-        nama,
-        email,
-        alamat,
-        deskripsi,
-        proposal: req.files['proposal'] ? req.files['proposal'][0].filename : null,
-        kontrak: req.files['kontrak'] ? req.files['kontrak'][0].filename : null,
-        nda: req.files['nda'] ? req.files['nda'][0].filename : null,
-      });
-      await klien.save();
-      res.status(201).json(klien);
-    } catch (err) {
-      res.status(500).json({ message: err.message });
-    }
-  }
-];
-
-// Memperbarui klien berdasarkan ID
-exports.update = [
-  upload.fields([{ name: 'proposal' }, { name: 'kontrak' }, { name: 'nda' }]),
-  async (req, res) => {
-    const { nama, email, alamat, deskripsi } = req.body;
-
-    try {
-      const klien = await Klien.findById(req.params.id);
-      if (!klien) return res.status(404).json({ message: 'Klien not found' });
-
-      if (nama) klien.nama = nama;
-      if (email) klien.email = email;
-      if (alamat) klien.alamat = alamat;
-      if (deskripsi) klien.deskripsi = deskripsi;
-      if (req.files['proposal']) klien.proposal = req.files['proposal'][0].filename;
-      if (req.files['kontrak']) klien.kontrak = req.files['kontrak'][0].filename;
-      if (req.files['nda']) klien.nda = req.files['nda'][0].filename;
-      klien.updated_at = Date.now();
-      await klien.save();
-      res.json(klien);
-    } catch (err) {
-      res.status(500).json({ message: err.message });
-    }
-  }
-];
-
-// Menghapus klien berdasarkan ID
-exports.delete = async (req, res) => {
   try {
-    const klien = await Klien.findById(req.params.id);
-    if (!klien) return res.status(404).json({ message: 'Klien not found' });
+    const newClient = await client.save();
+    res.status(201).json(newClient);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
 
-    await klien.remove();
-    res.json({ message: 'Klien deleted' });
+// Update a client by ID
+exports.updateClient = async (req, res) => {
+  try {
+    const client = await Klien.findById(req.params.id);
+    if (!client) {
+      return res.status(404).json({ message: 'Client not found' });
+    }
+
+    const { nama, email, alamat, deskripsi } = req.body;
+    
+    if (nama) client.nama = nama;
+    if (email) client.email = email;
+    if (alamat) client.alamat = alamat;
+    if (deskripsi) client.deskripsi = deskripsi;
+    client.updated_at = Date.now();
+
+    const updatedClient = await client.save();
+    res.status(200).json(updatedClient);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+// Delete a client by ID
+exports.deleteClient = async (req, res) => {
+  try {
+    const client = await Klien.findById(req.params.id);
+    if (!client) {
+      return res.status(404).json({ message: 'Client not found' });
+    }
+
+    await client.remove();
+    res.status(200).json({ message: 'Client deleted' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
