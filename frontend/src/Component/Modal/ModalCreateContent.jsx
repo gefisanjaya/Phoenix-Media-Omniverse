@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import axios from "../../axiosConfig";
-
+import { addHours } from 'date-fns';
 
 const ModalCreateContent = ({ showModal, onClose, onSubmit, konten }) => {
     const [formData, setFormData] = useState({
@@ -53,15 +53,10 @@ const ModalCreateContent = ({ showModal, onClose, onSubmit, konten }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const adjustedJadwal = addHours(formData.jadwal, 7);
         const formDataToSend = {
-            jadwal: formData.jadwal,
-            judul: formData.judul,
-            status_upload: formData.status_upload,
-            format_konten: formData.format_konten,
-            caption: formData.caption,
-            copy: formData.copy,
-            link_output: formData.link_output,
-            sosmed_id: formData.sosmed_id,
+            ...formData,
+            jadwal: adjustedJadwal,
         };
 
         try {
