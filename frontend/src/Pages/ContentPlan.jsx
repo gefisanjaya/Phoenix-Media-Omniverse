@@ -132,7 +132,7 @@ const ContentPlan = () => {
                   </button>
                 </td>
                 <td className="px-2 py-2 border">
-                  {item.status_upload !== "scheduled" ? (
+                  {item.status_upload === "not_scheduled" ? (
                     <button className="bg-purple text-white px-2 py-2 rounded flex justify-center" onClick={() => handleScheduleClick(index)}>
                       <p className="mr-2 text-sm text-center">Schedule</p>
                     </button>
