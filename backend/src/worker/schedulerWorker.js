@@ -39,20 +39,41 @@ const createMediaObjectContainer = async (instagramAccountId, konten) => {
   }
 };
 
+const createReelMediaObjectContainer = async (instagramAccountId, konten) => {
+  try {
+    const response = await axios.post(`https://graph.facebook.com/v20.0/${instagramAccountId}/media`, null, {
+      params: {
+        access_token: facebookUserAccessToken,
+        media_type: 'REELS',
+        video_url: konten.link_output,
+        caption: konten.caption,
+        share_to_feed: true
+      }
+    });
+    return response.data.id;
+  } catch (error) {
+    console.error('Error creating reel media object container:', error);
+    return null;
+  }
+};
+
 const publishMediaObjectContainer = async (instagramAccountId, containerId) => {
   try {
-    await axios.post(`https://graph.facebook.com/v20.0/${instagramAccountId}/media_publish`, null, {
+    const response = await axios.post(`https://graph.facebook.com/v20.0/${instagramAccountId}/media_publish`, null, {
       params: {
         access_token: facebookUserAccessToken,
         creation_id: containerId
       }
     });
+    return response.data;
   } catch (error) {
     console.error('Error publishing media object container:', error);
+    throw error;
   }
 };
 
 const scheduleContent = async () => {
+  let connectionClosed = false;
   try {
     console.log('Worker thread started');
 
@@ -77,7 +98,13 @@ const scheduleContent = async () => {
       throw new Error('No Instagram business account found');
     }
 
-    const containerId = await createMediaObjectContainer(instagramAccountId, konten);
+    let containerId;
+    if (konten.format_konten === 'REELS') {
+      containerId = await createReelMediaObjectContainer(instagramAccountId, konten);
+    } else {
+      containerId = await createMediaObjectContainer(instagramAccountId, konten);
+    }
+
     if (!containerId) {
       throw new Error('Failed to create media object container');
     }
@@ -103,7 +130,8 @@ const scheduleContent = async () => {
       setTimeout(async () => {
         try {
           console.log('Starting content publishing process');
-          await publishMediaObjectContainer(instagramAccountId, containerId);
+          const publishResponse = await publishMediaObjectContainer(instagramAccountId, containerId);
+          console.log('Publish response:', publishResponse);
           konten.status_upload = 'uploaded';
           console.log('Saving updated konten status to the database...');
           await konten.save();
@@ -114,8 +142,11 @@ const scheduleContent = async () => {
           console.error('Error during publishing or saving konten:', error);
           parentPort.postMessage({ success: false, message: error.message });
         } finally {
-          await mongoose.connection.close();
-          console.log('MongoDB connection closed');
+          if (mongoose.connection.readyState === 1) {
+            await mongoose.connection.close();
+            connectionClosed = true;
+            console.log('MongoDB connection closed');
+          }
           parentPort.postMessage('finish');
         }
       }, delay);
@@ -125,7 +156,7 @@ const scheduleContent = async () => {
   } catch (error) {
     console.error('Error scheduling content:', error);
     parentPort.postMessage({ success: false, message: error.message });
-    if (mongoose.connection.readyState === 1) {
+    if (mongoose.connection.readyState === 1 && !connectionClosed) {
       await mongoose.connection.close();
       console.log('MongoDB connection closed');
     }
