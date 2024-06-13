@@ -61,7 +61,8 @@ exports.create = async (req, res) => {
     const worker = new Worker(path.resolve(__dirname, '../worker/schedulerWorker.js'), {
       workerData: {
         scheduledContentId: scheduledContent._id.toString(),
-        sosmedId: sosialMedia._id.toString()
+        sosmedId: sosialMedia._id.toString(),
+        kontenFormat: konten.format_konten
       }
     });
 
