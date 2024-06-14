@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from '../axiosConfig'; // Adjust the path as necessary
 import Sidebar from '../Component/Sidebar';
 import ModalAddUser from '../Component/Modal/ModalAddUser';
-import ModalConfirmDelete from '../Component/Modal/ModalConfirmDelete';
+import ModalConfirmDeleteUser from '../Component/Modal/ModalConfirmDelete'; // Import the new modal
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -124,8 +124,8 @@ const UserManagement = () => {
               {users.map((user, index) => (
                 <tr key={user._id}>
                   <td className="px-4 py-2 border w-auto">{index + 1}</td>
-                  <td className="px-4 py-2 border">{user.username}</td>
-                  <td className="px-4 py-2 border">{user.role}</td>
+                  <td className="px-4 py-2 border text-left">{user.username}</td>
+                  <td className="px-4 py-2 border text-left">{user.role}</td>
                   <td className="px-4 py-2 border">
                     <button className="bg-blue hover:bg-midnight text-white px-2 py-1 rounded mr-2" onClick={() => handleEditClick(user)}>Edit</button>
                     <button className="bg-[red] text-white px-2 py-1 rounded" onClick={() => handleDeleteClick(user)}>Delete</button>
@@ -145,7 +145,7 @@ const UserManagement = () => {
         onSubmit={isEditMode ? handleEditUser : handleAddUser}
         initialData={selectedUser}
       />
-      <ModalConfirmDelete
+      <ModalConfirmDeleteUser
         show={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         onConfirm={handleDeleteUser}
