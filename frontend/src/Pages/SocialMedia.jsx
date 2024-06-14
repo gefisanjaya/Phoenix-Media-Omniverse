@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from '../axiosConfig'; // Adjust the path as necessary
 import Sidebar from '../Component/Sidebar';
 import ModalAddSocialMedia from '../Component/Modal/ModalAddSocialMedia';
-import ModalConfirmDelete from '../Component/Modal/ModalConfirmDelete';
+import ModalConfirmDeleteSocialMedia from '../Component/Modal/ModalConfirmDeleteSocialMedia';
 
-const SocialMedia = () => {
+const SocialMediaManagement = () => {
   const [socialMedias, setSocialMedias] = useState([]);
   const [selectedSocialMedia, setSelectedSocialMedia] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -21,7 +21,6 @@ const SocialMedia = () => {
           },
         });
         setSocialMedias(response.data);
-        console.log(response.data);
       } catch (error) {
         console.error('Error fetching social media accounts:', error);
       }
@@ -48,7 +47,7 @@ const SocialMedia = () => {
   const handleEditSocialMedia = async (socialMedia) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(`/socialMedias/${selectedSocialMedia._id}`, socialMedia, {
+      const response = await axios.put(`/social-media/${selectedSocialMedia._id}`, socialMedia, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -64,7 +63,7 @@ const SocialMedia = () => {
   const handleDeleteSocialMedia = async () => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`/socialMedias/${selectedSocialMedia._id}`, {
+      await axios.delete(`/social-media/${selectedSocialMedia._id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -111,12 +110,11 @@ const SocialMedia = () => {
               {socialMedias.map((socialMedia, index) => (
                 <tr key={socialMedia._id}>
                   <td className="px-4 py-2 border w-auto">{index + 1}</td>
-                  <td className="px-4 py-2 border">{socialMedia.id_klien.nama}</td>
-                  <td className="px-4 py-2 border">{socialMedia.platform}</td>
-                  <td className="px-4 py-2 border">{socialMedia.username}</td>
+                  <td className="px-4 py-2 border text-left">{socialMedia.id_klien.nama}</td>
+                  <td className="px-4 py-2 border text-left">{socialMedia.platform}</td>
+                  <td className="px-4 py-2 border text-left">{socialMedia.username}</td>
                   <td className="px-4 py-2 border">
-                    <button className="bg-blue hover:bg-midnight text-white px-2 py-1 rounded mr-2" onClick={() => handleEditClick(socialMedia)}>Edit</button>
-                    <button className="bg-red-500 hover:bg-red-700 text-white px-2 py-1 rounded" onClick={() => handleDeleteClick(socialMedia)}>Delete</button>
+                    <button className="bg-[red] hover:bg-[red] text-white px-2 py-1 rounded" onClick={() => handleDeleteClick(socialMedia)}>Delete</button>
                   </td>
                 </tr>
               ))}
@@ -132,16 +130,16 @@ const SocialMedia = () => {
         }}
         onSubmit={isEditMode ? handleEditSocialMedia : handleAddSocialMedia}
         initialData={selectedSocialMedia}
+        socialMedias={socialMedias} // Pass socialMedias to ModalAddSocialMedia
       />
-      <ModalConfirmDelete
+      <ModalConfirmDeleteSocialMedia
         show={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         onConfirm={handleDeleteSocialMedia}
-        item={selectedSocialMedia}
-        itemType="social media account"
+        socialMedia={selectedSocialMedia}
       />
     </div>
   );
 };
 
-export default SocialMedia;
+export default SocialMediaManagement;

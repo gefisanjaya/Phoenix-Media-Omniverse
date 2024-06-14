@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import axios from "../axiosConfig"; // Make sure this points to your axios configuration
 import Sidebar from "../Component/Sidebar";
 import ModalAddClient from "../Component/Modal/ModalAddClient";
+import ModalConfirmDeleteClient from "../Component/Modal/ModalConfirmDeleteClient"; // Import the new modal
 
 const Client = () => {
   const [clients, setClients] = useState([]);
   const [selectedClient, setSelectedClient] = useState(null);
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -51,6 +53,22 @@ const Client = () => {
     }
   };
 
+  const handleDeleteClient = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`/klien/${selectedClient._id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setClients(clients.filter(client => client._id !== selectedClient._id));
+      setShowDeleteModal(false);
+      setSelectedClient(null);
+    } catch (error) {
+      console.error("Error deleting client:", error);
+    }
+  };
+
   const filteredClients = clients.filter(client =>
     client.nama.toLowerCase().includes(search.toLowerCase())
   );
@@ -70,7 +88,7 @@ const Client = () => {
           <ul>
             <button className="bg-purple text-white px-4 py-2 mb-2 rounded flex items-center justify-center w-full" onClick={() => setShowModal(true)}>
               <span className="mr-2 text-center">Add Client</span>
-            </button>  
+            </button>
             {filteredClients.map((client, index) => (
               <li
                 key={client._id}
@@ -105,6 +123,7 @@ const Client = () => {
                   <p className="text-gray-600">{selectedClient.type}</p>
                 </div>
               </div>
+
               <div className="grid grid-cols-2 text-left font-semibold">
                 <div>
                   <h2 className="text-lg text-gray">Address</h2>
@@ -120,6 +139,14 @@ const Client = () => {
                 <h2 className="text-lg text-gray">Description</h2>
                 <p className="text-gray-700">{selectedClient.deskripsi}</p>
               </div>
+              <div className="w-full flex">
+                <button
+                  className="mt-10 px-4 py-2  bg-[red] text-white rounded "
+                  onClick={() => setShowDeleteModal(true)}
+                >
+                  Delete Client
+                </button>
+              </div>
             </>
           ) : (
             <p>Select a client to see the details</p>
@@ -130,6 +157,12 @@ const Client = () => {
         show={showModal}
         onClose={() => setShowModal(false)}
         onSubmit={handleAddClient}
+      />
+      <ModalConfirmDeleteClient
+        show={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDeleteClient}
+        client={selectedClient}
       />
     </div>
   );
