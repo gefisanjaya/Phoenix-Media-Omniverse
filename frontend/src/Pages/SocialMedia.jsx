@@ -21,6 +21,7 @@ const SocialMediaManagement = () => {
           },
         });
         setSocialMedias(response.data);
+        console.log(response.data)
       } catch (error) {
         console.error('Error fetching social media accounts:', error);
       }
@@ -39,6 +40,7 @@ const SocialMediaManagement = () => {
       });
       setSocialMedias([...socialMedias, response.data]);
       setShowModal(false);
+      window.location.reload();
     } catch (error) {
       console.error('Error adding social media account:', error);
     }
@@ -76,11 +78,6 @@ const SocialMediaManagement = () => {
     }
   };
 
-  const handleEditClick = (socialMedia) => {
-    setSelectedSocialMedia(socialMedia);
-    setIsEditMode(true);
-    setShowModal(true);
-  };
 
   const handleDeleteClick = (socialMedia) => {
     setSelectedSocialMedia(socialMedia);

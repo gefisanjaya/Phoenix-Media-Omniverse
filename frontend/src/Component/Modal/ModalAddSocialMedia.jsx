@@ -1,24 +1,17 @@
 import React, { useState, useEffect } from 'react';
 
-const ModalAddSocialMedia = ({ show, onClose, onSubmit, initialData, socialMedias }) => {
+const ModalAddSocialMedia = ({ show, onClose, onSubmit, socialMedias }) => {
   const [id_klien, setIdKlien] = useState('');
   const [platform, setPlatform] = useState('');
   const [username, setUsername] = useState('');
   const [sosmed_id, setSosmedId] = useState('');
 
   useEffect(() => {
-    if (initialData) {
-      setIdKlien(initialData.id_klien?._id || initialData.id_klien);
-      setPlatform(initialData.platform);
-      setUsername(initialData.username);
-      setSosmedId(initialData.sosmed_id);
-    } else {
-      setIdKlien('');
-      setPlatform('');
-      setUsername('');
-      setSosmedId('');
-    }
-  }, [initialData]);
+    setIdKlien('');
+    setPlatform('');
+    setUsername('');
+    setSosmedId('');
+  }, [show]);
 
   if (!show) {
     return null;
@@ -32,7 +25,7 @@ const ModalAddSocialMedia = ({ show, onClose, onSubmit, initialData, socialMedia
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-[28rem]">
-        <h2 className="text-lg font-semibold mb-4">{initialData ? 'Edit Social Media' : 'Add Social Media'}</h2>
+        <h2 className="text-lg font-semibold mb-4">Add Social Media</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">Client</label>
