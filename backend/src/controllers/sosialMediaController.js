@@ -75,10 +75,8 @@ exports.update = async (req, res) => {
 // Menghapus akun media sosial berdasarkan ID
 exports.delete = async (req, res) => {
   try {
-    const sosialMediaAccount = await SosialMedia.findById(req.params.id);
+    const sosialMediaAccount = await SosialMedia.findByIdAndDelete(req.params.id);
     if (!sosialMediaAccount) return res.status(404).json({ message: 'Social Media Account not found' });
-
-    await sosialMediaAccount.remove();
     res.json({ message: 'Social Media Account deleted' });
   } catch (err) {
     res.status(500).json({ message: err.message });
