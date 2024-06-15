@@ -1,7 +1,7 @@
 const Klien = require('../models/klien');
 
 // Get all clients
-exports.getAllClients = async (req, res) => {
+exports.getAllKlien = async (req, res) => {
   try {
     const clients = await Klien.find();
     res.status(200).json(clients);
@@ -11,7 +11,7 @@ exports.getAllClients = async (req, res) => {
 };
 
 // Get a single client by ID
-exports.getClientById = async (req, res) => {
+exports.getKlienById = async (req, res) => {
   try {
     const client = await Klien.findById(req.params.id);
     if (!client) {
@@ -24,7 +24,7 @@ exports.getClientById = async (req, res) => {
 };
 
 // Create a new client
-exports.createClient = async (req, res) => {
+exports.createKlien = async (req, res) => {
   const { nama, email, alamat, deskripsi } = req.body;
 
   const client = new Klien({
@@ -43,7 +43,7 @@ exports.createClient = async (req, res) => {
 };
 
 // Update a client by ID
-exports.updateClient = async (req, res) => {
+exports.updateKlien = async (req, res) => {
   try {
     const client = await Klien.findById(req.params.id);
     if (!client) {
@@ -66,7 +66,7 @@ exports.updateClient = async (req, res) => {
 };
 
 // Delete a client by ID
-exports.deleteClient = async (req, res) => {
+exports.deleteKlien = async (req, res) => {
   try {
     const client = await Klien.findByIdAndDelete(req.params.id);
     if (!client) {

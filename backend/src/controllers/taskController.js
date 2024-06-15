@@ -90,7 +90,7 @@ exports.manageTask = async (req, res) => {
 };
 
 // Update task status to "in_progress"
-exports.update = async (req, res) => {
+exports.updateTask = async (req, res) => {
   try {
     const task = await Task.findById(req.params.id);
     if (!task) {

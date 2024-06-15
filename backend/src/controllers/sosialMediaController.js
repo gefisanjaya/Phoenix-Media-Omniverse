@@ -11,7 +11,7 @@ exports.index = async (req, res) => {
 };
 
 // Mengambil akun media sosial berdasarkan ID
-exports.get = async (req, res) => {
+exports.getSosmed = async (req, res) => {
   try {
     const sosialMediaAccount = await SosialMedia.findById(req.params.id).populate('id_klien');
     if (!sosialMediaAccount) return res.status(404).json({ message: 'Social Media Account not found' });
@@ -22,7 +22,7 @@ exports.get = async (req, res) => {
 };
 
 // Mengambil akun media sosial berdasarkan ID
-exports.getById = async (req, res) => {
+exports.getSosmedById = async (req, res) => {
   try {
     const sosialMediaAccount = await SosialMedia.findById(req.params.id).populate('id_klien');
     if (!sosialMediaAccount) return res.status(404).json({ message: 'Social Media Account not found' });
@@ -34,7 +34,7 @@ exports.getById = async (req, res) => {
 
 
 // Membuat akun media sosial baru
-exports.create = async (req, res) => {
+exports.createSosmed = async (req, res) => {
   const { id_klien, platform, username, sosmed_id } = req.body;
 
   if (!id_klien || !platform || !username || !sosmed_id) {
@@ -56,7 +56,7 @@ exports.create = async (req, res) => {
 };
 
 // Memperbarui akun media sosial berdasarkan ID
-exports.update = async (req, res) => {
+exports.updateSosmed = async (req, res) => {
   const { sosmed_id} = req.body;
 
   try {
@@ -73,7 +73,7 @@ exports.update = async (req, res) => {
 };
 
 // Menghapus akun media sosial berdasarkan ID
-exports.delete = async (req, res) => {
+exports.deleteSosmed = async (req, res) => {
   try {
     const sosialMediaAccount = await SosialMedia.findByIdAndDelete(req.params.id);
     if (!sosialMediaAccount) return res.status(404).json({ message: 'Social Media Account not found' });
