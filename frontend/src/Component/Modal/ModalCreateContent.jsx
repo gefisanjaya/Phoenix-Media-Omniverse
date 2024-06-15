@@ -66,7 +66,7 @@ const ModalCreateContent = ({ showModal, onClose, onSubmit, konten }) => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-
+            window.location.reload();
             console.log(response.data);
             onSubmit(formDataToSend); // Call the onSubmit function with the submitted data
         } catch (error) {
