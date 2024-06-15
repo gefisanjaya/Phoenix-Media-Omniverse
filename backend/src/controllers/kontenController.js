@@ -73,7 +73,7 @@ exports.getKontenById = async (req, res) => {
 };
 
 // Update a content by ID
-exports.updateKontenById = async (req, res) => {
+exports.updateKonten = async (req, res) => {
   try {
     const { id_klien, sosmed_id, jadwal, judul, format_konten, caption, copy, link_output, status_upload } = req.body;
 
@@ -121,7 +121,7 @@ exports.updateKontenById = async (req, res) => {
 };
 
 // Delete a content by ID
-exports.deleteKontenById = async (req, res) => {
+exports.deleteKonten = async (req, res) => {
   try {
     const deletedKonten = await Konten.findByIdAndDelete(req.params.id);
 
