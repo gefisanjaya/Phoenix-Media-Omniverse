@@ -10,8 +10,9 @@ const ModalAddClient = ({ show, onClose, onSubmit }) => {
     event.preventDefault();
     const nama = event.target.elements.nama.value;
     const email = event.target.elements.email.value;
+    const alamat = event.target.elements.alamat.value;
     const deskripsi = event.target.elements.deskripsi.value;
-    onSubmit({ nama, email, deskripsi });
+    onSubmit({ nama, alamat, email, deskripsi });
   };
 
   return (
@@ -26,6 +27,10 @@ const ModalAddClient = ({ show, onClose, onSubmit }) => {
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">Email</label>
             <input type='email' name="email" className="w-full border border-gray p-2 rounded" required></input>
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1">Alamat</label>
+            <input type='text' name="alamat" className="w-full border border-gray p-2 rounded" required></input>
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">Description</label>
