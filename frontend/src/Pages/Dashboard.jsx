@@ -167,7 +167,7 @@ const Dashboard = () => {
                   >
                     <div className="absolute top-1 right-1">{day}</div>
                     <div className="mt-4 overflow-auto h-full">
-                      {day && getDayEvents(day).map((event, idx) => (
+                      {day && getDayEvents(day).slice(0, 3).map((event, idx) => (
                         <div key={idx} className={`text-[0.5rem] font-semibold rounded-xl p-1 mb-1 ${event.jadwal ? 'bg-[#3AD55C]' : 'bg-[#B6D53A]'}`}>
                           {event.jadwal ? `Content: ${event.sosmed_id.username}` : `Task: ${event.assign}`}
                         </div>
