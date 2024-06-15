@@ -14,7 +14,7 @@ const ModalDetails = ({ showModal, onClose, konten, selectedIndex }) => {
             <tbody>
               <tr>
                 <td className="font-semibold px-4">Time</td>
-                <td>{selectedKonten.jadwal && moment(selectedKonten.jadwal).format('llll')}</td>
+                <td>{selectedKonten.jadwal && moment(selectedKonten.jadwal).utcOffset(0).format('llll')}</td>
               </tr>
               <tr>
                 <td className="font-semibold px-4">Client</td>

@@ -66,7 +66,7 @@ const Task = () => {
     fetchUsers();
   }, []);
 
-  const onDragEnd = result => {
+  const onDragEnd = async result => {
     const { destination, source, draggableId } = result;
 
     if (!destination) {
@@ -127,6 +127,23 @@ const Task = () => {
     };
 
     setData(newState);
+
+    // Update task status in the backend
+    try {
+      const token = localStorage.getItem("token");
+      let newStatus = 'available';
+      if (newFinish.id === 'column-2') newStatus = 'in_progress';
+      else if (newFinish.id === 'column-3') newStatus = 'in_review';
+      else if (newFinish.id === 'column-4') newStatus = 'done';
+
+      await axiosInstance.put(`/tasks/${draggableId}`, { status: newStatus }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
+    } catch (error) {
+      console.error('Error updating task status:', error);
+    }
   };
 
   const handleAddTask = async (task) => {
@@ -180,7 +197,8 @@ const Task = () => {
                     <div
                       {...provided.droppableProps}
                       ref={provided.innerRef}
-                      className="flex-1 p-2 bg-white rounded shadow"
+                      className="flex-1 p-2 bg-white rounded shadow overflow-y-auto"
+                      style={{ maxHeight: 'calc(120vh - 200px)' }} // Adjust this value as needed
                     >
                       {tasks.map((task, index) => (
                         <Draggable key={task._id} draggableId={task._id} index={index}>
