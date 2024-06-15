@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from '../../axiosConfig'; // Adjust the path as necessary
 
-const ModalAddSocialMedia = ({ show, onClose, onSubmit, initialData }) => {
-  const [clients, setClients] = useState([]);
+const ModalAddSocialMedia = ({ show, onClose, onSubmit, initialData, socialMedias }) => {
   const [id_klien, setIdKlien] = useState('');
   const [platform, setPlatform] = useState('');
   const [username, setUsername] = useState('');
@@ -22,24 +20,6 @@ const ModalAddSocialMedia = ({ show, onClose, onSubmit, initialData }) => {
     }
   }, [initialData]);
 
-  useEffect(() => {
-    const fetchClients = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get('/clients', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setClients(response.data);
-      } catch (error) {
-        console.error('Error fetching clients:', error);
-      }
-    };
-
-    fetchClients();
-  }, []);
-
   if (!show) {
     return null;
   }
@@ -56,10 +36,17 @@ const ModalAddSocialMedia = ({ show, onClose, onSubmit, initialData }) => {
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">Client</label>
-            <select value={id_klien.nama} onChange={(e) => setIdKlien(e.target.value)} className="w-full border border-gray-300 p-2 rounded-lg" required>
+            <select
+              value={id_klien}
+              onChange={(e) => setIdKlien(e.target.value)}
+              className="w-full border border-gray-300 p-2 rounded-lg"
+              required
+            >
               <option value="">Select Client</option>
-              {clients.map(client => (
-                <option key={client._id} value={client._id}>{client.id_klien.nama}</option>
+              {socialMedias.map(sm => (
+                <option key={sm.id_klien._id} value={sm.id_klien._id}>
+                  {sm.id_klien.nama}
+                </option>
               ))}
             </select>
           </div>
@@ -76,8 +63,8 @@ const ModalAddSocialMedia = ({ show, onClose, onSubmit, initialData }) => {
             <input type="text" value={sosmed_id} onChange={(e) => setSosmedId(e.target.value)} className="w-full border border-gray-300 p-2 rounded-lg" required />
           </div>
           <div className="flex justify-end">
-            <button type="button" onClick={onClose} className="mr-4 px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg">Cancel</button>
-            <button type="submit" className="px-4 py-2 bg-purple hover:bg-lightpurple text-white rounded-lg">Save</button>
+            <button type="button" onClick={onClose} className="mr-4 px-4 py-2 bg-gray text-white rounded-lg">Cancel</button>
+            <button type="submit" className="px-4 py-2 bg-purple text-white rounded-lg">Save</button>
           </div>
         </form>
       </div>
