@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from "../Component/Sidebar";
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import ModalAddTask from '../Component/Modal/ModalAddTask';
+import ModalTaskDetails from '../Component/Modal/ModalTaskDetails';
 import axiosInstance from '../axiosConfig';
 
 const Task = () => {
   const [data, setData] = useState({ tasks: {}, columns: {}, columnOrder: [] });
   const [showModal, setShowModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
@@ -179,6 +182,35 @@ const Task = () => {
     }
   };
 
+  const handleTaskClick = (taskId) => {
+    setSelectedTask(data.tasks[taskId]);
+    setShowDetailsModal(true);
+  };
+
+  const handleDeleteTask = async (taskId) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axiosInstance.delete(`/tasks/${taskId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
+
+      const newTasks = { ...data.tasks };
+      delete newTasks[taskId];
+
+      const newColumns = { ...data.columns };
+      Object.keys(newColumns).forEach(columnId => {
+        const taskIds = newColumns[columnId].taskIds.filter(id => id !== taskId);
+        newColumns[columnId] = { ...newColumns[columnId], taskIds };
+      });
+
+      setData({ ...data, tasks: newTasks, columns: newColumns });
+    } catch (error) {
+      console.error('Error deleting task:', error);
+    }
+  };
+
   return (
     <div className="flex w-full h-full no-scrollbar">
       <Sidebar />
@@ -207,7 +239,8 @@ const Task = () => {
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
                               ref={provided.innerRef}
-                              className="p-4 mb-2 bg-gray-50 rounded shadow"
+                              className="p-4 mb-2 bg-gray-50 rounded shadow cursor-pointer"
+                              onClick={() => handleTaskClick(task._id)}
                             >
                               <h3 className="text-sm text-left font-bold mb-2">Task #{index + 1}</h3>
                               <hr className="h-0.5 border-t-1 border-gray/30" />
@@ -240,6 +273,12 @@ const Task = () => {
         onClose={() => setShowModal(false)}
         onSubmit={handleAddTask}
         users={users}
+      />
+      <ModalTaskDetails
+        show={showDetailsModal}
+        onClose={() => setShowDetailsModal(false)}
+        task={selectedTask}
+        onDelete={handleDeleteTask}
       />
     </div>
   );
