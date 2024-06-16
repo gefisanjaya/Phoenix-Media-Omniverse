@@ -12,7 +12,7 @@ const ModalEventDetails = ({ show, onClose, events }) => {
         <h2 className="text-lg font-semibold mb-4">Event Details</h2>
         <div className="mb-4 text-left">
           <label className="block text-sm font-bold mb-1">Date</label>
-          <p>{moment(events.length > 0 ? (events[0].tenggat_waktu || events[0].jadwal) : new Date()).format('dddd, D MMMM YYYY')}</p>
+          <p>{moment.utc(events.length > 0 ? (events[0].tenggat_waktu || events[0].jadwal) : new Date()).format('dddd, D MMMM YYYY')}</p>
         </div>
         <div className="mb-4 text-left">
           <label className="block text-sm font-bold mb-1">Events</label>
@@ -22,7 +22,7 @@ const ModalEventDetails = ({ show, onClose, events }) => {
                 <li key={idx} className="mb-1 text-left">
                   {event.jadwal ? `Content: ${event.sosmed_id.username}` : `Task: ${event.assign}`}
                   <span className="block text-gray font-light float-right">
-                    {moment(event.tenggat_waktu || event.jadwal).format('hh:mm A')}
+                    {moment.utc(event.tenggat_waktu || event.jadwal).format('hh:mm A')}
                   </span>
                 </li>
               ))}
