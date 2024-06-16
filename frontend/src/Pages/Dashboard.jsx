@@ -96,29 +96,29 @@ const Dashboard = () => {
   };
 
   const getDayEvents = (day) => {
-    const dayStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-    const dayEnd = new Date(currentDate.getFullYear(), currentDate.getMonth(), day + 1);
+    const dayStart = moment.utc([currentDate.getFullYear(), currentDate.getMonth(), day]);
+    const dayEnd = dayStart.clone().add(1, 'day');
 
     const dayTasks = tasks.filter(task => {
-      const taskDate = new Date(task.tenggat_waktu);
-      return taskDate >= dayStart && taskDate < dayEnd;
+      const taskDate = moment.utc(task.tenggat_waktu);
+      return taskDate.isBetween(dayStart, dayEnd, null, '[)');
     });
 
     const dayContents = contents.filter(content => {
-      const contentDate = new Date(content.jadwal);
-      return contentDate >= dayStart && contentDate < dayEnd;
+      const contentDate = moment.utc(content.jadwal);
+      return contentDate.isBetween(dayStart, dayEnd, null, '[)');
     });
 
     return [...dayTasks, ...dayContents];
   };
 
   const getNearestActivities = () => {
-    const today = new Date();
-    const upcomingTasks = tasks.filter(task => new Date(task.tenggat_waktu) >= today);
-    const upcomingContents = contents.filter(content => new Date(content.jadwal) >= today);
+    const today = moment.utc();
+    const upcomingTasks = tasks.filter(task => moment.utc(task.tenggat_waktu).isSameOrAfter(today));
+    const upcomingContents = contents.filter(content => moment.utc(content.jadwal).isSameOrAfter(today));
 
     const allUpcomingEvents = [...upcomingTasks, ...upcomingContents].sort(
-      (a, b) => new Date(a.tenggat_waktu || a.jadwal) - new Date(b.tenggat_waktu || b.jadwal)
+      (a, b) => moment.utc(a.tenggat_waktu || a.jadwal) - moment.utc(b.tenggat_waktu || b.jadwal)
     );
 
     return allUpcomingEvents.slice(0, 5); // Adjust the number of nearest activities to display
@@ -158,11 +158,11 @@ const Dashboard = () => {
                 <div key={index} className="bg-[#6561AC] bg-opacity-50 p-2">{day}</div>
               ))}
               {days.map((day, index) => {
-                const isToday = moment().isSame(new Date(currentDate.getFullYear(), currentDate.getMonth(), day), 'day');
+                const isToday = moment.utc().isSame(moment.utc([currentDate.getFullYear(), currentDate.getMonth(), day]), 'day');
                 return (
                   <div
                     key={index}
-                    className={`relative w-50 h-[100px] p-2 border border-gray border-opacity-30 ${isToday ? "bg-lightpurple bg-opacity-50 border text-black" : ""}`} // Changed color to Orange for today
+                    className={`relative w-50 h-[100px] p-2 border border-gray border-opacity-30 ${isToday ? "bg-lightpurple bg-opacity-50 border text-black" : ""}`}
                     onClick={() => handleDateClick(day)}
                   >
                     <div className="absolute top-1 right-1">{day}</div>
@@ -176,7 +176,6 @@ const Dashboard = () => {
                   </div>
                 );
               })}
-
             </div>
           </div>
           <div className="ml-2 mt-8 w-1/3">
@@ -187,7 +186,7 @@ const Dashboard = () => {
                   <li key={idx} className="mb-1 text-left">
                     {event.jadwal ? `Content: ${event.sosmed_id.username}` : `Task: ${event.assign}`}{" "}
                     <span className="text-gray-500 font-light float-right">
-                      {moment(event.tenggat_waktu || event.jadwal).fromNow()}
+                      {moment.utc(event.tenggat_waktu || event.jadwal).fromNow()}
                     </span>
                   </li>
                 ))}
