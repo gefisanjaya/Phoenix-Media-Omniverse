@@ -6,7 +6,7 @@ const SosialMedia = require('../models/mediaSosial');
 const ScheduledContent = require('../models/scheduledContent');
 const Konten = require('../models/konten');
 
-const facebookUserAccessToken = 'EAARJC2wb79gBO4lN0yLgiB8PSJZC4AK3PLoWal40njHSEJsE5eG3ZBAGPZCie4cgAMuyBmbVpLQ0P4iCGdPzUFIakIws2tYWUVaZAUUUnHHThFw6XoehL8woMVHsd1dd8tYnk7SftKTd22LFq9wQfWgM6mhoohvzYlZCUZCWVsjB6E1D5mMxIOLfKVgEiu5TSg';
+const facebookUserAccessToken = 'EAARJC2wb79gBOzAAUlfPjaC0UzpAo5TKOZBZBx4PyVXifheuOhrcWwIXoDBsw2lY0mhnXoLs97HNhVmWiqdlwhXzc1QGduRp1cz9zhqcW6DdNSLPVAbj5zxoTGZAx69bSM5iJuUV5MZC9SPM4HnMIBbmfUTxhuZAccdHQZA0ZCZB9PPz0ZCEyXGpZAiEPbqgZA3BV6r';
 
 const getInstagramAccountIdFromDB = async (sosmedId) => {
   try {
