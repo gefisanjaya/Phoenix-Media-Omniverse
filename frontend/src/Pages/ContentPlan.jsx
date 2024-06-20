@@ -14,6 +14,7 @@ import ModalSchedule from "../Component/Modal/ModalSchedule";
 
 const ContentPlan = () => {
   const [konten, setKonten] = useState([]);
+  const [socialMedias, setSocialMedias] = useState([]); // Add state for social media
   const [showModal, setShowModal] = useState(false);
   const [showModalForm, setShowModalForm] = useState(false);
   const [showModalSchedule, setShowModalSchedule] = useState(false);
@@ -22,6 +23,7 @@ const ContentPlan = () => {
 
   useEffect(() => {
     getKonten();
+    getSocialMedias(); // Fetch social media data
   }, []);
 
   const getKonten = async () => {
@@ -34,6 +36,21 @@ const ContentPlan = () => {
       });
 
       setKonten(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getSocialMedias = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get("/social-media", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setSocialMedias(response.data);
       console.log(response.data);
     } catch (error) {
       console.log(error);
@@ -259,7 +276,7 @@ const ContentPlan = () => {
           showModal={showModalForm}
           onClose={() => setShowModalForm(false)}
           onSubmit={handleFormSubmit}
-          konten={konten}
+          socialMedias={socialMedias} // Pass social media data to ModalCreateContent
         />
         <ModalSchedule
           showModal={showModalSchedule}

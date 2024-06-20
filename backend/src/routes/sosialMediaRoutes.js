@@ -4,7 +4,7 @@ const sosialMediaController = require('../controllers/sosialMediaController');
 const auth = require('../middleware/authMiddleware');
 
 // Hanya admin yang dapat mengakses rute ini
-router.get('/', auth(['admin']), sosialMediaController.index);
+router.get('/', auth(['admin', 'content_planner']), sosialMediaController.index);
 router.get('/:id', auth(['admin']), sosialMediaController.getById);
 router.post('/', auth(['admin']), sosialMediaController.create);
 router.put('/:id', auth(['admin']), sosialMediaController.update);
