@@ -11,6 +11,7 @@ const Task = () => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const [users, setUsers] = useState([]);
+  const [currentUserRole, setCurrentUserRole] = useState('');
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -65,8 +66,14 @@ const Task = () => {
       }
     };
 
+    const fetchCurrentUserRole = () => {
+      const role = localStorage.getItem("role");
+      setCurrentUserRole(role);
+    };
+
     fetchTasks();
     fetchUsers();
+    fetchCurrentUserRole();
   }, []);
 
   const onDragEnd = async result => {
@@ -251,7 +258,7 @@ const Task = () => {
                           )}
                         </Draggable>
                       ))}
-                      {columnId === 'column-1' && (
+                      {columnId === 'column-1' && currentUserRole === 'content_planner' && (
                         <button
                           onClick={() => setShowModal(true)}
                           className="mb-2 px-4 py-2 w-full bg-purple text-white rounded"
@@ -279,6 +286,7 @@ const Task = () => {
         onClose={() => setShowDetailsModal(false)}
         task={selectedTask}
         onDelete={handleDeleteTask}
+        role={currentUserRole} // Pass the current user's role to ModalTaskDetails
       />
     </div>
   );
