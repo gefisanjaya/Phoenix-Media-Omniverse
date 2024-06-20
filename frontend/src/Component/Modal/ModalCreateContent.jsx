@@ -95,7 +95,7 @@ const ModalCreateContent = ({ showModal, onClose, onSubmit, socialMedias }) => {
                                     onChange={handleDateChange}
                                     showTimeSelect
                                     timeFormat="HH:mm"
-                                    timeIntervals={15}
+                                    timeIntervals={5}
                                     timeCaption="time"
                                     dateFormat="MMMM d, yyyy h:mm aa"
                                     className="w-full px-3 py-2 border rounded"
@@ -117,14 +117,17 @@ const ModalCreateContent = ({ showModal, onClose, onSubmit, socialMedias }) => {
                         </div>
                         <div className="w-1/2 pl-2">
                             <label className="block text-gray-700">Format</label>
-                            <input
-                                type="text"
+                            <select
                                 name="format_konten"
                                 value={formData.format_konten}
                                 onChange={handleChange}
                                 className="w-full px-3 py-2 border rounded"
                                 required
-                            />
+                            >
+                                <option value="">Select Format</option>
+                                <option value="FEED">FEED</option>
+                                <option value="REELS">REELS</option>
+                            </select>
                         </div>
                     </div>
                     <div className="mb-4">
