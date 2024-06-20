@@ -37,25 +37,6 @@ exports.createTask = async (req, res) => {
   }
 };
 
-// Update task status
-exports.updateTask = async (req, res) => {
-  const { status } = req.body;
-  try {
-    const task = await Task.findById(req.params.id);
-
-    if (!task) {
-      return res.status(404).json({ message: 'Task not found' });
-    }
-
-    task.status = status;
-    task.updated_at = Date.now();
-
-    await task.save();
-    res.status(200).json(task);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
 
 // Delete a task
 exports.deleteTask = async (req, res) => {
@@ -90,7 +71,7 @@ exports.manageTask = async (req, res) => {
 };
 
 // Update task status to "in_progress"
-exports.update = async (req, res) => {
+exports.updateTask = async (req, res) => {
   try {
     const task = await Task.findById(req.params.id);
     if (!task) {

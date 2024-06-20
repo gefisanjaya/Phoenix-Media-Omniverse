@@ -3,7 +3,6 @@ const router = express.Router();
 const sosialMediaController = require('../controllers/sosialMediaController');
 const auth = require('../middleware/authMiddleware');
 
-// Hanya admin yang dapat mengakses rute ini
 router.get('/', auth(['admin', 'content_planner']), sosialMediaController.index);
 router.get('/:id', auth(['admin']), sosialMediaController.getById);
 router.post('/', auth(['admin']), sosialMediaController.create);

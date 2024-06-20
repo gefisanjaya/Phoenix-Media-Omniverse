@@ -12,7 +12,7 @@ exports.index = async (req, res) => {
 };
 
 // Get user by ID
-exports.get = async (req, res) => {
+exports.getUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) {
@@ -25,7 +25,7 @@ exports.get = async (req, res) => {
 };
 
 // Create new user
-exports.create = async (req, res) => {
+exports.createUser = async (req, res) => {
   const { username, password, role } = req.body;
 
   try {
@@ -43,7 +43,7 @@ exports.create = async (req, res) => {
 };
 
 // Update user
-exports.update = async (req, res) => {
+exports.updateUser = async (req, res) => {
   const { username, role } = req.body;
 
   try {
@@ -64,7 +64,7 @@ exports.update = async (req, res) => {
 };
 
 // Delete user
-exports.delete = async (req, res) => {
+exports.deleteUser = async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);
     if (!user) {
