@@ -2,14 +2,12 @@ import React, { useState, useEffect } from 'react';
 
 const ModalAddSocialMedia = ({ show, onClose, onSubmit, clients }) => {
   const [id_klien, setIdKlien] = useState('');
-  const [platform, setPlatform] = useState('');
   const [username, setUsername] = useState('');
   const [sosmed_id, setSosmedId] = useState('');
 
   useEffect(() => {
     if (show) {
       setIdKlien('');
-      setPlatform('');
       setUsername('');
       setSosmedId('');
     }
@@ -21,7 +19,7 @@ const ModalAddSocialMedia = ({ show, onClose, onSubmit, clients }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    onSubmit({ id_klien, platform, username, sosmed_id });
+    onSubmit({ id_klien, platform: 'instagram', username, sosmed_id });
   };
 
   return (
@@ -47,7 +45,7 @@ const ModalAddSocialMedia = ({ show, onClose, onSubmit, clients }) => {
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">Platform</label>
-            <input type="text" value={platform} onChange={(e) => setPlatform(e.target.value)} className="w-full border border-gray-300 p-2 rounded-lg" required />
+            <input type="text" value="instagram" className="w-full border border-gray-300 p-2 rounded-lg" disabled />
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">Username</label>
