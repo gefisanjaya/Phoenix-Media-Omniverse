@@ -1,28 +1,19 @@
 import React, { useState, useEffect } from 'react';
 
-const ModalAddSocialMedia = ({ show, onClose, onSubmit, socialMedias }) => {
+const ModalAddSocialMedia = ({ show, onClose, onSubmit, clients }) => {
   const [id_klien, setIdKlien] = useState('');
   const [platform, setPlatform] = useState('');
   const [username, setUsername] = useState('');
   const [sosmed_id, setSosmedId] = useState('');
-  const [uniqueClients, setUniqueClients] = useState([]);
 
   useEffect(() => {
-    setIdKlien('');
-    setPlatform('');
-    setUsername('');
-    setSosmedId('');
-
-    // Extract unique client names
-    const clients = socialMedias.reduce((acc, sm) => {
-      if (!acc.some(client => client._id === sm.id_klien._id)) {
-        acc.push(sm.id_klien);
-      }
-      return acc;
-    }, []);
-    
-    setUniqueClients(clients);
-  }, [show, socialMedias]);
+    if (show) {
+      setIdKlien('');
+      setPlatform('');
+      setUsername('');
+      setSosmedId('');
+    }
+  }, [show]);
 
   if (!show) {
     return null;
@@ -47,7 +38,7 @@ const ModalAddSocialMedia = ({ show, onClose, onSubmit, socialMedias }) => {
               required
             >
               <option value="">Select Client</option>
-              {uniqueClients.map(client => (
+              {clients.map(client => (
                 <option key={client._id} value={client._id}>
                   {client.nama}
                 </option>

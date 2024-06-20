@@ -6,6 +6,7 @@ import ModalConfirmDeleteSocialMedia from '../Component/Modal/ModalConfirmDelete
 
 const SocialMediaManagement = () => {
   const [socialMedias, setSocialMedias] = useState([]);
+  const [clients, setClients] = useState([]);
   const [selectedSocialMedia, setSelectedSocialMedia] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -21,13 +22,27 @@ const SocialMediaManagement = () => {
           },
         });
         setSocialMedias(response.data);
-        console.log(response.data)
       } catch (error) {
         console.error('Error fetching social media accounts:', error);
       }
     };
 
+    const fetchClients = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('/klien', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setClients(response.data);
+      } catch (error) {
+        console.error('Error fetching clients:', error);
+      }
+    };
+
     fetchSocialMedias();
+    fetchClients();
   }, []);
 
   const handleAddSocialMedia = async (socialMedia) => {
@@ -46,22 +61,6 @@ const SocialMediaManagement = () => {
     }
   };
 
-  const handleEditSocialMedia = async (socialMedia) => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.put(`/social-media/${selectedSocialMedia._id}`, socialMedia, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setSocialMedias(socialMedias.map(sm => (sm._id === selectedSocialMedia._id ? response.data : sm)));
-      setShowModal(false);
-      setIsEditMode(false);
-    } catch (error) {
-      console.error('Error editing social media account:', error);
-    }
-  };
-
   const handleDeleteSocialMedia = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -77,7 +76,6 @@ const SocialMediaManagement = () => {
       console.error('Error deleting social media account:', error);
     }
   };
-
 
   const handleDeleteClick = (socialMedia) => {
     setSelectedSocialMedia(socialMedia);
@@ -103,7 +101,7 @@ const SocialMediaManagement = () => {
                 <th className="px-4 py-2 border">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-gray">
               {socialMedias.map((socialMedia, index) => (
                 <tr key={socialMedia._id}>
                   <td className="px-4 py-2 border w-auto">{index + 1}</td>
@@ -125,9 +123,8 @@ const SocialMediaManagement = () => {
           setShowModal(false);
           setIsEditMode(false);
         }}
-        onSubmit={isEditMode ? handleEditSocialMedia : handleAddSocialMedia}
-        initialData={selectedSocialMedia}
-        socialMedias={socialMedias} // Pass socialMedias to ModalAddSocialMedia
+        onSubmit={handleAddSocialMedia}
+        clients={clients} // Pass clients to ModalAddSocialMedia
       />
       <ModalConfirmDeleteSocialMedia
         show={showDeleteModal}
