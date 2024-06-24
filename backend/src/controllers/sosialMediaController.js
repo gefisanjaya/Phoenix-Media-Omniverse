@@ -41,6 +41,16 @@ exports.createSosmed = async (req, res) => {
     return res.status(400).json({ message: 'Required fields are missing' });
   }
 
+  const validPlatforms = ['instagram'];
+  if (!validPlatforms.includes(platform)) {
+    return res.status(400).json({ message: 'Invalid platform' });
+  }
+
+  const client = await Klien.findById(id_klien);
+  if (!client) {
+    return res.status(400).json({ message: 'Invalid client ID' });
+  }
+
   try {
     const sosialMediaAccount = new SosialMedia({
       id_klien,
