@@ -9,7 +9,7 @@ router.put('/:id', auth(['content_planner', 'designer', 'videographer']), taskCo
 router.delete('/:id', auth(['content_planner']), taskController.deleteTask);
 router.get('/:id', auth(['designer', 'videographer']), taskController.get);
 router.put('/:id/manage', auth(['designer', 'videographer']), taskController.manageTask);
-router.patch('/:id/in_progress', taskController.patchTaskStatus);
+router.patch('/:id', auth(['content_planner', 'designer', 'videographer']), taskController.patchTaskStatus);
 
 
 module.exports = router;

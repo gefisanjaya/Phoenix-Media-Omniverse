@@ -1,29 +1,34 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "../axiosConfig";
 import Sidebar from "../Component/Sidebar";
-import { FaExternalLinkAlt } from "react-icons/fa";
+import { FaExternalLinkAlt, FaEdit, FaTrash } from "react-icons/fa";
 import moment from "moment";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import * as XLSX from "xlsx"; // Correct import for xlsx
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import ModalDetails from "../Component/Modal/ModalDetails";
 import ModalCreateContent from "../Component/Modal/ModalCreateContent";
 import ModalExport from "../Component/Modal/ModalExport";
+import ModalConfirmDeleteContent from "../Component/Modal/ModalConfirmDeleteContent"; // Import the new modal
 import ig from "../icon/instagram.ico";
 import ModalSchedule from "../Component/Modal/ModalSchedule";
 
 const ContentPlan = () => {
   const [konten, setKonten] = useState([]);
-  const [socialMedias, setSocialMedias] = useState([]); // Add state for social media
+  const [socialMedias, setSocialMedias] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [showModalForm, setShowModalForm] = useState(false);
   const [showModalSchedule, setShowModalSchedule] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedKontenIndex, setSelectedKontenIndex] = useState(null);
+  const [isEditMode, setIsEditMode] = useState(false);
 
   useEffect(() => {
     getKonten();
-    getSocialMedias(); // Fetch social media data
+    getSocialMedias();
   }, []);
 
   const getKonten = async () => {
@@ -57,9 +62,55 @@ const ContentPlan = () => {
     }
   };
 
-  const handleFormSubmit = (formData) => {
-    console.log("Form Data:", formData);
-    setShowModalForm(false);
+  const handleFormSubmit = async (formData) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (isEditMode) {
+        await axios.put(`/konten/${konten[selectedKontenIndex]._id}`, formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        toast.success("Content updated successfully");
+      } else {
+        await axios.post("/konten", formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        toast.success("Content created successfully" , {
+          position : 'bottom-right'
+        });
+      }
+      setShowModalForm(false);
+      getKonten();
+    } catch (error) {
+      console.error(error);
+      toast.error("Error saving content" , {
+        position : 'bottom-right'
+      });
+    }
+  };
+
+  const handleDeleteContent = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`/konten/${konten[selectedKontenIndex]._id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      toast.success("Content deleted successfully", {
+        position : 'bottom-right'
+      });
+      setShowDeleteModal(false);
+      getKonten();
+    } catch (error) {
+      console.error(error);
+      toast.error("Error deleting content" , {
+        position : 'bottom-right'
+      });
+    }
   };
 
   const handleDetailsClick = (index) => {
@@ -75,7 +126,6 @@ const ContentPlan = () => {
   const handleScheduleConfirm = async () => {
     if (selectedKontenIndex !== null) {
       const kontenItem = konten[selectedKontenIndex];
-      // Add your Schedule logic here. For example, you might want to update the status in the backend
       try {
         const token = localStorage.getItem("token");
         await axios.post(
@@ -87,11 +137,9 @@ const ContentPlan = () => {
             },
           }
         );
-
-        // Optionally refresh the content list
         getKonten();
       } catch (error) {
-        console.error("Error publishing content:", error);
+        console.error("Error scheduling content:", error);
       }
     }
   };
@@ -99,7 +147,6 @@ const ContentPlan = () => {
   const handleExport = async (options) => {
     const { range, client, format } = options;
 
-    // Filter the konten based on the selected range and client
     let filteredKonten = konten;
 
     if (range === "this_week") {
@@ -168,7 +215,20 @@ const ContentPlan = () => {
     setShowExportModal(false);
   };
 
-  const uniqueClients = [...new Set(konten.map((item) => item.sosmed_id.id_klien.nama))];
+  const uniqueClients = [
+    ...new Set(konten.map((item) => item.sosmed_id.id_klien.nama)),
+  ];
+
+  const handleEditClick = (index) => {
+    setSelectedKontenIndex(index);
+    setIsEditMode(true);
+    setShowModalForm(true);
+  };
+
+  const handleDeleteClick = (index) => {
+    setSelectedKontenIndex(index);
+    setShowDeleteModal(true);
+  };
 
   return (
     <div className="flex w-full h-full no-scrollbar">
@@ -179,7 +239,7 @@ const ContentPlan = () => {
           <div className="flex space-x-4">
             <button
               className="bg-purple text-white px-4 py-2 rounded flex items-center"
-              onClick={() => setShowModalForm(true)}
+              onClick={() => { setShowModalForm(true); setIsEditMode(false); }}
             >
               <span className="mr-2">Create</span>
               <FaExternalLinkAlt />
@@ -250,14 +310,28 @@ const ContentPlan = () => {
                     <p className="underline">Details</p>
                   </button>
                 </td>
-                <td className="px-2 py-2 border">
+                <td className="px-2 py-2 flex justify-center items-center">
                   {item.status_upload === "not_uploaded" ? (
-                    <button
-                      className="bg-purple text-white px-2 py-2 rounded flex justify-center"
-                      onClick={() => handleScheduleClick(index)}
-                    >
-                      <p className="mr-2 text-sm text-center">Schedule</p>
-                    </button>
+                    <>
+                      <button
+                        className="bg-purple text-white px-2 py-2 rounded flex justify-center"
+                        onClick={() => handleScheduleClick(index)}
+                      >
+                        <p className="text-sm text-center">Schedule</p>
+                      </button>
+                      <button
+                        className="bg-purple text-white rounded flex items-center justify-center ml-2 h-8 w-8"
+                        onClick={() => handleEditClick(index)}
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        className="bg-[red] text-white rounded flex items-center justify-center ml-2 h-8 w-8"
+                        onClick={() => handleDeleteClick(index)}
+                      >
+                        <FaTrash />
+                      </button>
+                    </>
                   ) : (
                     <span>-</span>
                   )}
@@ -276,7 +350,8 @@ const ContentPlan = () => {
           showModal={showModalForm}
           onClose={() => setShowModalForm(false)}
           onSubmit={handleFormSubmit}
-          socialMedias={socialMedias} // Pass social media data to ModalCreateContent
+          socialMedias={socialMedias}
+          initialData={isEditMode ? konten[selectedKontenIndex] : null}
         />
         <ModalSchedule
           showModal={showModalSchedule}
@@ -289,6 +364,13 @@ const ContentPlan = () => {
           onConfirm={handleExport}
           clients={uniqueClients}
         />
+        <ModalConfirmDeleteContent
+          show={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={handleDeleteContent}
+          content={konten[selectedKontenIndex]}
+        />
+        <ToastContainer />
       </div>
     </div>
   );

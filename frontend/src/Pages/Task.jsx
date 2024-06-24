@@ -4,6 +4,8 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import ModalAddTask from '../Component/Modal/ModalAddTask';
 import ModalTaskDetails from '../Component/Modal/ModalTaskDetails';
 import axiosInstance from '../axiosConfig';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Task = () => {
   const [data, setData] = useState({ tasks: {}, columns: {}, columnOrder: [] });
@@ -146,19 +148,30 @@ const Task = () => {
       else if (newFinish.id === 'column-3') newStatus = 'in_review';
       else if (newFinish.id === 'column-4') newStatus = 'done';
 
-      await axiosInstance.put(`/tasks/${draggableId}`, { status: newStatus }, {
+      const updatedTask = { ...data.tasks[draggableId], status: newStatus };
+      await axiosInstance.put(`/tasks/${draggableId}`, updatedTask, {
         headers: {
           Authorization: `Bearer ${token}`,
         }
       });
+
+      setData(prevData => ({
+        ...prevData,
+        tasks: {
+          ...prevData.tasks,
+          [draggableId]: updatedTask,
+        }
+      }));
+
+      toast.success("Task status updated successfully!");
     } catch (error) {
       console.error('Error updating task status:', error);
+      toast.error("Error updating task status!");
     }
   };
 
   const handleAddTask = async (task) => {
     try {
-      console.log(task);
       const token = localStorage.getItem("token");
       const response = await axiosInstance.post('/tasks', task, {
         headers: {
@@ -184,8 +197,10 @@ const Task = () => {
 
       setData(newState);
       setShowModal(false);
+      toast.success("Task added successfully!");
     } catch (error) {
       console.error('Error creating task:', error);
+      toast.error("Error creating task!");
     }
   };
 
@@ -213,8 +228,33 @@ const Task = () => {
       });
 
       setData({ ...data, tasks: newTasks, columns: newColumns });
+      toast.success("Task deleted successfully!");
     } catch (error) {
       console.error('Error deleting task:', error);
+      toast.error("Error deleting task!");
+    }
+  };
+
+  const handleUpdateTask = async (taskId, updatedTask) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axiosInstance.put(`/tasks/${taskId}`, updatedTask, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
+
+      const newTasks = {
+        ...data.tasks,
+        [taskId]: response.data,
+      };
+
+      setData({ ...data, tasks: newTasks });
+      setShowDetailsModal(false);
+      toast.success("Task updated successfully!");
+    } catch (error) {
+      console.error('Error updating task:', error);
+      toast.error("Error updating task!");
     }
   };
 
@@ -286,8 +326,10 @@ const Task = () => {
         onClose={() => setShowDetailsModal(false)}
         task={selectedTask}
         onDelete={handleDeleteTask}
-        role={currentUserRole} // Pass the current user's role to ModalTaskDetails
+        role={currentUserRole}
+        onUpdate={handleUpdateTask} // Pass the update handler to ModalTaskDetails
       />
+      <ToastContainer />
     </div>
   );
 };

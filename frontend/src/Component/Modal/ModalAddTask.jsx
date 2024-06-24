@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ModalAddTask = ({ show, onClose, onSubmit, users }) => {
   const [startDate, setStartDate] = useState(new Date());
@@ -15,11 +17,14 @@ const ModalAddTask = ({ show, onClose, onSubmit, users }) => {
     const deskripsi = event.target.elements.deskripsi.value;
     const status = 'available'; // default status as per schema
     const tenggat_waktu = startDate.toISOString();
-    console.log({ userId, deskripsi, status, tenggat_waktu }); 
-    onSubmit({ userId, deskripsi, tenggat_waktu });
+    try {
+      onSubmit({ userId, deskripsi, tenggat_waktu });
+      toast.success("Task added successfully!");
+    } catch (error) {
+      toast.error("Error adding task!");
+    }
   };
 
-  // Filter users to show only designers and videographers
   const filteredUsers = users.filter(user => user.role === 'designer' || user.role === 'videographer');
 
   return (
@@ -56,6 +61,7 @@ const ModalAddTask = ({ show, onClose, onSubmit, users }) => {
             <button type="submit" className="px-4 py-2 bg-purple text-white rounded">Save</button>
           </div>
         </form>
+        <ToastContainer />
       </div>
     </div>
   );

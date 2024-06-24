@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../axiosConfig'; // Adjust the path as necessary
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Sidebar from '../Component/Sidebar';
 import ModalAddUser from '../Component/Modal/ModalAddUser';
 import ModalConfirmDeleteUser from '../Component/Modal/ModalConfirmDelete'; // Import the new modal
@@ -24,6 +26,7 @@ const UserManagement = () => {
         setUsers(response.data);
       } catch (error) {
         console.error('Error fetching users:', error);
+        toast.error('Error fetching users');
       }
     };
 
@@ -40,8 +43,14 @@ const UserManagement = () => {
       });
       setUsers([...users, response.data]);
       setShowModal(false);
+      toast.success('User added successfully', {
+        position : 'bottom-right'
+      });
     } catch (error) {
       console.error('Error adding user:', error);
+      toast.error('Error adding user', {
+        position : 'bottom-right'
+      });
     }
   };
 
@@ -56,8 +65,12 @@ const UserManagement = () => {
       setUsers(users.map(u => (u._id === selectedUser._id ? response.data : u)));
       setShowModal(false);
       setIsEditMode(false);
+      toast.success('User updated successfully');
     } catch (error) {
       console.error('Error editing user:', error);
+      toast.error('Error editing user', {
+        position : 'bottom-right'
+      });
     }
   };
 
@@ -72,8 +85,14 @@ const UserManagement = () => {
       setUsers(users.filter(u => u._id !== selectedUser._id));
       setShowDeleteModal(false);
       setSelectedUser(null);
+      toast.success('User deleted successfully', {
+        position : 'bottom-right'
+      });
     } catch (error) {
       console.error('Error deleting user:', error);
+      toast.error('Error deleting user', {
+        position : 'bottom-right'
+      });
     }
   };
 
@@ -106,7 +125,7 @@ const UserManagement = () => {
         <div className="w-full bg-white p-4 rounded shadow">
           <div className="flex justify-between mb-4">
             <h2 className="text-2xl font-bold">User Management</h2>
-            <button className="bg-purple hover:bg-lightpurple text-white px-4 py-2 rounded" onClick={() => setShowModal(true)}>Add User</button>
+            <button className="bg-purple hover:bg-lightpurple text-white px-4 py-2 rounded" onClick={() => { setShowModal(true); setIsEditMode(false); }}>Add User</button>
           </div>
           <table className="min-w-full bg-white border border-gray-200 rounded-lg">
             <thead className="bg-gray bg-opacity-55">
@@ -127,7 +146,7 @@ const UserManagement = () => {
                   <td className="px-4 py-2 border text-left">{user.username}</td>
                   <td className="px-4 py-2 border text-left">{user.role}</td>
                   <td className="px-4 py-2 border">
-                    <button className="bg-blue hover:bg-midnight text-white px-2 py-1 rounded mr-2" onClick={() => handleEditClick(user)}>Edit</button>
+                    <button className="bg-purple hover:bg-midnight text-white px-2 py-1 rounded mr-2" onClick={() => handleEditClick(user)}>Edit</button>
                     <button className="bg-[red] text-white px-2 py-1 rounded" onClick={() => handleDeleteClick(user)}>Delete</button>
                   </td>
                 </tr>
@@ -151,6 +170,7 @@ const UserManagement = () => {
         onConfirm={handleDeleteUser}
         user={selectedUser}
       />
+      <ToastContainer />
     </div>
   );
 };

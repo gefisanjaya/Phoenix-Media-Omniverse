@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "../axiosConfig"; // Make sure this points to your axios configuration
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Sidebar from "../Component/Sidebar";
 import ModalAddClient from "../Component/Modal/ModalAddClient";
 import ModalConfirmDeleteClient from "../Component/Modal/ModalConfirmDeleteClient"; // Import the new modal
@@ -10,6 +12,7 @@ const Client = () => {
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -48,8 +51,27 @@ const Client = () => {
       });
       setClients([...clients, response.data]);
       setShowModal(false);
+      toast.success("Client added successfully!");
     } catch (error) {
       console.error("Error adding client:", error);
+      toast.error("Error adding client. Please try again.");
+    }
+  };
+
+  const handleEditClient = async (client) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.put(`/klien/${selectedClient._id}`, client, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setClients(clients.map(c => (c._id === selectedClient._id ? { ...c, ...client } : c)));
+      setShowModal(false);
+      toast.success("Client updated successfully!");
+    } catch (error) {
+      console.error("Error updating client:", error);
+      toast.error("Error updating client. Please try again.");
     }
   };
 
@@ -64,14 +86,24 @@ const Client = () => {
       setClients(clients.filter(client => client._id !== selectedClient._id));
       setShowDeleteModal(false);
       setSelectedClient(null);
+      toast.success("Client deleted successfully!");
     } catch (error) {
       console.error("Error deleting client:", error);
+      toast.error("Error deleting client. Please try again.");
     }
   };
 
   const filteredClients = clients.filter(client =>
     client.nama.toLowerCase().includes(search.toLowerCase())
   );
+
+  const handleModalSubmit = (client) => {
+    if (isEditMode) {
+      handleEditClient(client);
+    } else {
+      handleAddClient(client);
+    }
+  };
 
   return (
     <div className="flex w-full h-full no-scrollbar">
@@ -86,7 +118,7 @@ const Client = () => {
             className="w-full p-2 mb-2 border rounded"
           />
           <ul>
-            <button className="bg-purple text-white px-4 py-2 mb-2 rounded flex items-center justify-center w-full" onClick={() => setShowModal(true)}>
+            <button className="bg-purple text-white px-4 py-2 mb-2 rounded flex items-center justify-center w-full" onClick={() => { setShowModal(true); setIsEditMode(false); }}>
               <span className="mr-2 text-center">Add Client</span>
             </button>
             {filteredClients.map((client, index) => (
@@ -141,7 +173,13 @@ const Client = () => {
               </div>
               <div className="w-full flex">
                 <button
-                  className="mt-10 px-4 py-2  bg-[red] text-white rounded "
+                  className="mt-10 px-4 py-2 bg-purple text-white rounded mr-2"
+                  onClick={() => { setShowModal(true); setIsEditMode(true); }}
+                >
+                  Edit Client
+                </button>
+                <button
+                  className="mt-10 px-4 py-2 bg-[red] text-white rounded"
                   onClick={() => setShowDeleteModal(true)}
                 >
                   Delete Client
@@ -156,7 +194,8 @@ const Client = () => {
       <ModalAddClient
         show={showModal}
         onClose={() => setShowModal(false)}
-        onSubmit={handleAddClient}
+        onSubmit={handleModalSubmit}
+        client={isEditMode ? selectedClient : null}
       />
       <ModalConfirmDeleteClient
         show={showDeleteModal}
@@ -164,6 +203,7 @@ const Client = () => {
         onConfirm={handleDeleteClient}
         client={selectedClient}
       />
+      <ToastContainer />
     </div>
   );
 };
