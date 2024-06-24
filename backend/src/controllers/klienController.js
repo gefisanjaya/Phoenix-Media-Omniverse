@@ -27,6 +27,15 @@ exports.getKlienById = async (req, res) => {
 exports.createKlien = async (req, res) => {
   const { nama, email, alamat, deskripsi } = req.body;
 
+  if (!nama || !email || !deskripsi) {
+    return res.status(400).json({ message: 'Nama, email, dan deskripsi harus diisi.' });
+  }
+
+  const existingClient = await Klien.findOne({ email });
+  if (existingClient) {
+    return res.status(400).json({ message: 'Email sudah digunakan.' });
+  }
+
   const client = new Klien({
     nama,
     email,
@@ -51,6 +60,15 @@ exports.updateKlien = async (req, res) => {
     }
 
     const { nama, email, alamat, deskripsi } = req.body;
+
+    if (!nama || !email || !deskripsi) {
+      return res.status(400).json({ message: 'Nama, email, dan deskripsi harus diisi.' });
+    }
+
+    const existingClient = await Klien.findOne({ email });
+    if (existingClient && existingClient._id.toString() !== req.params.id) {
+      return res.status(400).json({ message: 'Email sudah digunakan oleh klien lain.' });
+    }
     
     if (nama) client.nama = nama;
     if (email) client.email = email;
