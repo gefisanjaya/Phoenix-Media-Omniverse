@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../axiosConfig'; // Adjust the path as necessary
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Sidebar from '../Component/Sidebar';
 import ModalAddSocialMedia from '../Component/Modal/ModalAddSocialMedia';
 import ModalConfirmDeleteSocialMedia from '../Component/Modal/ModalConfirmDeleteSocialMedia';
@@ -48,16 +50,36 @@ const SocialMediaManagement = () => {
   const handleAddSocialMedia = async (socialMedia) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post('/social-media', socialMedia, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setSocialMedias([...socialMedias, response.data]);
+      if (socialMedia._id) {
+        await axios.put(`/social-media/${socialMedia._id}`, socialMedia, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setSocialMedias(socialMedias.map(sm => (sm._id === socialMedia._id ? socialMedia : sm)));
+        toast.success('Social media account updated successfully.', {
+          position: "bottom-right"
+        });
+      } else {
+        const response = await axios.post('/social-media', socialMedia, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setSocialMedias([...socialMedias, response.data]);
+        toast.success('Social media account added successfully.', {
+          position: "bottom-right"
+        });
+      }
       setShowModal(false);
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     } catch (error) {
-      console.error('Error adding social media account:', error);
+      console.error('Error adding/updating social media account:', error);
+      toast.error('An error occurred. Please try again.' , {
+        position: "bottom-right"
+      });
     }
   };
 
@@ -72,14 +94,26 @@ const SocialMediaManagement = () => {
       setSocialMedias(socialMedias.filter(sm => sm._id !== selectedSocialMedia._id));
       setShowDeleteModal(false);
       setSelectedSocialMedia(null);
+      toast.success('Social media account deleted successfully.', {
+        position: "bottom-right"
+      });
     } catch (error) {
       console.error('Error deleting social media account:', error);
+      toast.error('An error occurred. Please try again.', {
+        position: "bottom-right"
+      });
     }
   };
 
   const handleDeleteClick = (socialMedia) => {
     setSelectedSocialMedia(socialMedia);
     setShowDeleteModal(true);
+  };
+
+  const handleEditClick = (socialMedia) => {
+    setSelectedSocialMedia(socialMedia);
+    setShowModal(true);
+    setIsEditMode(true);
   };
 
   return (
@@ -109,7 +143,8 @@ const SocialMediaManagement = () => {
                   <td className="px-4 py-2 border text-left">{socialMedia.platform}</td>
                   <td className="px-4 py-2 border text-left">{socialMedia.username}</td>
                   <td className="px-4 py-2 border">
-                    <button className="bg-[red] hover:bg-[red] text-white px-2 py-1 rounded" onClick={() => handleDeleteClick(socialMedia)}>Delete</button>
+                    <button className="bg-purple hover:bg-[blue] text-white px-2 py-1 rounded" onClick={() => handleEditClick(socialMedia)}>Edit</button>
+                    <button className="bg-[red] hover:bg-[red] text-white px-2 py-1 rounded ml-2" onClick={() => handleDeleteClick(socialMedia)}>Delete</button>
                   </td>
                 </tr>
               ))}
@@ -125,6 +160,7 @@ const SocialMediaManagement = () => {
         }}
         onSubmit={handleAddSocialMedia}
         clients={clients} // Pass clients to ModalAddSocialMedia
+        socialMedia={isEditMode ? selectedSocialMedia : null}
       />
       <ModalConfirmDeleteSocialMedia
         show={showDeleteModal}
@@ -132,6 +168,7 @@ const SocialMediaManagement = () => {
         onConfirm={handleDeleteSocialMedia}
         socialMedia={selectedSocialMedia}
       />
+      <ToastContainer />
     </div>
   );
 };

@@ -1,17 +1,23 @@
 import React, { useState, useEffect } from 'react';
 
-const ModalAddSocialMedia = ({ show, onClose, onSubmit, clients }) => {
+const ModalAddSocialMedia = ({ show, onClose, onSubmit, clients, socialMedia }) => {
   const [id_klien, setIdKlien] = useState('');
   const [username, setUsername] = useState('');
   const [sosmed_id, setSosmedId] = useState('');
 
   useEffect(() => {
     if (show) {
-      setIdKlien('');
-      setUsername('');
-      setSosmedId('');
+      if (socialMedia) {
+        setIdKlien(socialMedia.id_klien._id);
+        setUsername(socialMedia.username);
+        setSosmedId(socialMedia.sosmed_id);
+      } else {
+        setIdKlien('');
+        setUsername('');
+        setSosmedId('');
+      }
     }
-  }, [show]);
+  }, [show, socialMedia]);
 
   if (!show) {
     return null;
@@ -19,13 +25,19 @@ const ModalAddSocialMedia = ({ show, onClose, onSubmit, clients }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    onSubmit({ id_klien, platform: 'instagram', username, sosmed_id });
+    onSubmit({
+      id_klien,
+      platform: 'instagram',
+      username,
+      sosmed_id,
+      _id: socialMedia ? socialMedia._id : undefined,
+    });
   };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-[28rem]">
-        <h2 className="text-lg font-semibold mb-4">Add Social Media</h2>
+        <h2 className="text-lg font-semibold mb-4">{socialMedia ? 'Edit Social Media' : 'Add Social Media'}</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">Client</label>
@@ -57,7 +69,7 @@ const ModalAddSocialMedia = ({ show, onClose, onSubmit, clients }) => {
           </div>
           <div className="flex justify-end">
             <button type="button" onClick={onClose} className="mr-4 px-4 py-2 bg-gray text-white rounded-lg">Cancel</button>
-            <button type="submit" className="px-4 py-2 bg-purple text-white rounded-lg">Save</button>
+            <button type="submit" className="px-4 py-2 bg-purple text-white rounded-lg">{socialMedia ? 'Update' : 'Save'}</button>
           </div>
         </form>
       </div>
