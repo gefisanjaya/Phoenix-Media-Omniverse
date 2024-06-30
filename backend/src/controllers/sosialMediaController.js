@@ -1,4 +1,5 @@
 const SosialMedia = require('../models/mediaSosial');
+const Klien = require('../models/klien');
 
 // Mengambil semua akun media sosial
 exports.index = async (req, res) => {

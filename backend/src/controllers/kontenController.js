@@ -85,7 +85,7 @@ exports.updateKonten = async (req, res) => {
       }
     }
 
-    if (id_sosmed) {
+    if (sosmed_id) {
       const sosmedExists = await SosialMedia.findById(sosmed_id);
       if (!sosmedExists) {
         return res.status(400).json({ message: 'SosialMedia not found' });
