@@ -87,7 +87,10 @@ const ModalTaskDetails = ({ show, onClose, task, onDelete, role, onUpdate }) => 
               />
             </div>
             <div className="flex justify-end">
-              <button type="button" onClick={onClose} className="mr-4 px-4 py-2 bg-gray text-white rounded">Cancel</button>
+              <button type="button" onClick={() => {
+                    setIsEditMode(false);
+                    onClose();
+                  }} className="mr-4 px-4 py-2 bg-gray text-white rounded">Cancel</button>
               <button type="submit" className="px-4 py-2 bg-purple text-white rounded">Save</button>
             </div>
           </form>
@@ -96,10 +99,12 @@ const ModalTaskDetails = ({ show, onClose, task, onDelete, role, onUpdate }) => 
             <p className='text-left'><strong>Assigned to:</strong> {task.assign}</p>
             <p className='text-left'><strong>Description:</strong> {task.deskripsi}</p>
             <p className='text-left'><strong>Due Date:</strong> {new Date(task.tenggat_waktu).toLocaleString()}</p>
-            <button type="button" onClick={onClose} className="mr-4 mt-2 px-4 py-2 bg-gray text-white rounded">Close</button>
             {role === 'content_planner' && (
               <div className="flex justify-end mt-4">
-                <button type="button" onClick={onClose} className="mr-4 px-4 py-2 bg-gray text-white rounded">Cancel</button>
+                <button type="button" onClick={() => {
+                    setIsEditMode(false);
+                    onClose();
+                  }} className="mr-4 px-4 py-2 bg-gray text-white rounded">Cancel</button>
                 <button
                   type="button"
                   onClick={() => setIsEditMode(true)}

@@ -80,28 +80,28 @@ const Task = () => {
 
   const onDragEnd = async result => {
     const { destination, source, draggableId } = result;
-
+  
     if (!destination) {
       return;
     }
-
+  
     if (destination.droppableId === source.droppableId && destination.index === source.index) {
       return;
     }
-
+  
     const start = data.columns[source.droppableId];
     const finish = data.columns[destination.droppableId];
-
+  
     if (start === finish) {
       const newTaskIds = Array.from(start.taskIds);
       newTaskIds.splice(source.index, 1);
       newTaskIds.splice(destination.index, 0, draggableId);
-
+  
       const newColumn = {
         ...start,
         taskIds: newTaskIds,
       };
-
+  
       const newState = {
         ...data,
         columns: {
@@ -109,11 +109,11 @@ const Task = () => {
           [newColumn.id]: newColumn,
         },
       };
-
+  
       setData(newState);
       return;
     }
-
+  
     // Moving from one list to another
     const startTaskIds = Array.from(start.taskIds);
     startTaskIds.splice(source.index, 1);
@@ -121,14 +121,14 @@ const Task = () => {
       ...start,
       taskIds: startTaskIds,
     };
-
+  
     const finishTaskIds = Array.from(finish.taskIds);
     finishTaskIds.splice(destination.index, 0, draggableId);
     const newFinish = {
       ...finish,
       taskIds: finishTaskIds,
     };
-
+  
     const newState = {
       ...data,
       columns: {
@@ -137,9 +137,9 @@ const Task = () => {
         [newFinish.id]: newFinish,
       },
     };
-
+  
     setData(newState);
-
+  
     // Update task status in the backend
     try {
       const token = localStorage.getItem("token");
@@ -147,28 +147,31 @@ const Task = () => {
       if (newFinish.id === 'column-2') newStatus = 'in_progress';
       else if (newFinish.id === 'column-3') newStatus = 'in_review';
       else if (newFinish.id === 'column-4') newStatus = 'done';
-
-      const updatedTask = { ...data.tasks[draggableId], status: newStatus };
-      await axiosInstance.put(`/tasks/${draggableId}`, updatedTask, {
+  
+      await axiosInstance.patch(`/tasks/${draggableId}`, { status: newStatus }, {
         headers: {
           Authorization: `Bearer ${token}`,
         }
       });
-
+  
       setData(prevData => ({
         ...prevData,
         tasks: {
           ...prevData.tasks,
-          [draggableId]: updatedTask,
+          [draggableId]: {
+            ...prevData.tasks[draggableId],
+            status: newStatus,
+          }
         }
       }));
-
+  
       toast.success("Task status updated successfully!");
     } catch (error) {
       console.error('Error updating task status:', error);
       toast.error("Error updating task status!");
     }
   };
+  
 
   const handleAddTask = async (task) => {
     try {

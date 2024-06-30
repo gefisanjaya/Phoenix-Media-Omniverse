@@ -293,15 +293,15 @@ const ContentPlan = () => {
                 </td>
                 {item.status_upload === "not_uploaded" ? (
                   <td className="px-2 py-2 border bg-[gray] bg-opacity-55">
-                    {item.status_upload}
+                    Not Uploaded
                   </td>
                 ) : item.status_upload === "scheduled" ? (
                   <td className="px-2 py-2 border bg-[yellow]">
-                    {item.status_upload}
+                    Scheduled
                   </td>
                 ) : (
                   <td className="px-2 py-2 border bg-[green]">
-                    {item.status_upload}
+                    Uploaded
                   </td>
                 )}
 
